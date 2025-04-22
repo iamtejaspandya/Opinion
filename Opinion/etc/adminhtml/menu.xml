@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Digit Software Solutions.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category  Dss
+ * @package   Dss_Opinion
+ * @author    Extension Team
+ * @copyright Copyright (c) 2025 Digit Software Solutions. ( https://digitsoftsol.com )
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+  <menu>
+    <add id="Dss_Opinion::product_opinion" title="Product Opinion List" module="Dss_Opinion"
+      sortOrder="10" parent="Dss_Core::dss_menu" resource="Magento_Backend::content"
+      action="dss_opinion/index/index" />
+  </menu>
+</config>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Digit Software Solutions.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category  Dss
+ * @package   Dss_Opinion
+ * @author    Extension Team
+ * @copyright Copyright (c) 2025 Digit Software Solutions. ( https://digitsoftsol.com )
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="customer_account_navigation">
+            <block class="Magento\Customer\Block\Account\SortLinkInterface"
+                name="customer-account-navigation-opinion-link" ifconfig="opinion/general/enable_product_opinion">
+                <arguments>
+                    <argument name="label" xsi:type="string">My Opinions</argument>
+                    <argument name="path" xsi:type="string">opinion/index/myopinions</argument>
+                    <argument name="sortOrder" xsi:type="number">190</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

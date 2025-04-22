@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * Digit Software Solutions.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category  Dss
+ * @package   Dss_Opinion
+ * @author    Extension Team
+ * @copyright Copyright (c) 2025 Digit Software Solutions. ( https://digitsoftsol.com )
+ */
+
+/** @var \Dss\Opinion\Block\OpinionButton $block */
+?>
+
+<?php if ($block->isProductOpinionEnabled()): ?>
+    <div class="dss-opinion">
+        <?php if ($block->isCustomerLoggedIn()): ?>
+            <div id="opinion-wrapper" class="opinion-wrapper">
+                <div id="opinion-container" class="opinion-container"></div>
+                <div id="opinion-message" class="opinion-message"></div>
+            </div>
+
+            <?php
+                $formKey = $escaper->escapeJs($block->getFormKey());
+                $productId = $escaper->escapeJs($block->getProductId());
+                $productName = $escaper->escapeJs($block->getProductName());
+
+                $likeMessage = $escaper->escapeJs(__(
+                    'You liked ' . $block->getProductName() . ', Do you change your opinion?'
+                ));
+                $dislikeMessage = $escaper->escapeJs(__(
+                    'You disliked ' . $block->getProductName() . ', Do you change your opinion?'
+                ));
+                $defaultMessage = $escaper->escapeJs(__(
+                    'Please give your opinion for ' . $block->getProductName() . '.'
+                ));
+            ?>
+
+            <script type="text/x-magento-init">
+                {
+                    "#opinion-wrapper": {
+                        "opinionHandler": {
+                            "statusUrl": "<?= /* @noEscape */ $block->getUrl('opinion/index/status') ?>",
+                            "saveUrl": "<?= /* @noEscape */ $block->getUrl('opinion/index/save') ?>",
+                            "labelUrl": "<?= /* @noEscape */ $block->getUrl('opinion/index/productopinionlabel') ?>",
+                            "formKey": "<?= /* @noEscape */ $formKey ?>",
+                            "productId": "<?= /* @noEscape */ $productId ?>",
+                            "productName": "<?= /* @noEscape */ $productName ?>",
+                            "likeMessage": "<?= /* @noEscape */ $likeMessage ?>",
+                            "dislikeMessage": "<?= /* @noEscape */ $dislikeMessage ?>",
+                            "defaultMessage": "<?= /* @noEscape */ $defaultMessage ?>",
+                            "likeLabel": "<?= $escaper->escapeJs(__('Like')) ?>",
+                            "dislikeLabel": "<?= $escaper->escapeJs(__('Dislike')) ?>",
+                            "errorMessage": "<?= $escaper->escapeJs(__('Something went wrong.')) ?>"
+                        }
+                    }
+                }
+            </script>
+        <?php else: ?>
+            <div class="message info empty">
+                <div>
+                    <?= /* @noEscape */ __(
+                        'Only registered users can leave an opinion.
+                            Please <a href="%1">Sign in</a> or <a href="%2">create an account</a>',
+                        $escaper->escapeUrl($block->getUrl(
+                            'customer/account/login',
+                            ['referer' => $block->getCurrentUrlEncoded()]
+                        )),
+                        $escaper->escapeUrl($block->getUrl(
+                            'customer/account/create/',
+                        ))
+                    ) ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>

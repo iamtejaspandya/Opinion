@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Digit Software Solutions.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category  Dss
+ * @package   Dss_Opinion
+ * @author    Extension Team
+ * @copyright Copyright (c) 2025 Digit Software Solutions. ( https://digitsoftsol.com )
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="product.info.main">
+            <block class="Dss\Opinion\Block\OpinionButton"
+                   name="product.opinion.button"
+                   template="Dss_Opinion::opinion_button.phtml"
+                   after="product.info.price"/>
+        </referenceContainer>
+        <referenceContainer name="product.info.media">
+            <block class="Dss\Opinion\Block\ProductOpinionLabel"
+                    name="product.opinion"
+                    template="Dss_Opinion::product_opinion_label.phtml" />
+        </referenceContainer>
+    </body>
+</page>

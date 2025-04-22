@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Digit Software Solutions.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category  Dss
+ * @package   Dss_Opinion
+ * @author    Extension Team
+ * @copyright Copyright (c) 2025 Digit Software Solutions. ( https://digitsoftsol.com )
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+  <router id="admin">
+    <route id="dss_opinion" frontName="dss_opinion">
+      <module name="Dss_Opinion" before="Magento_Backend" />
+    </route>
+  </router>
+</config>

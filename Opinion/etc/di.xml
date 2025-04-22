@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Digit Software Solutions.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category  Dss
+ * @package   Dss_Opinion
+ * @author    Extension Team
+ * @copyright Copyright (c) 2025 Digit Software Solutions. ( https://digitsoftsol.com )
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+  <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+    <arguments>
+      <argument name="collections" xsi:type="array">
+        <item name="dss_opinion_listing_data_source" xsi:type="string">DssOpinionCollection</item>
+      </argument>
+    </arguments>
+  </type>
+
+  <virtualType name="DssOpinionCollection" type="Dss\Opinion\Ui\DataProvider\Opinion\Collection">
+    <arguments>
+      <argument name="mainTable" xsi:type="string">dss_product_opinion</argument>
+      <argument name="resourceModel" xsi:type="string">Dss\Opinion\Model\ResourceModel\Opinion</argument>
+    </arguments>
+  </virtualType>
+
+  <type name="Dss\Opinion\Ui\Component\Listing\Columns\ProductDetails">
+      <arguments>
+          <argument name="context" xsi:type="object">
+            Magento\Framework\View\Element\UiComponent\ContextInterface
+          </argument>
+          <argument name="productRepository" xsi:type="object">
+            Magento\Catalog\Api\ProductRepositoryInterface
+          </argument>
+          <argument name="opinionCollectionFactory" xsi:type="object">
+            Dss\Opinion\Model\ResourceModel\Opinion\CollectionFactory
+          </argument>
+      </arguments>
+  </type>
+</config>
