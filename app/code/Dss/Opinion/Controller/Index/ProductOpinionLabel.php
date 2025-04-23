@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 namespace Dss\Opinion\Controller\Index;
 
+use Dss\Opinion\Model\Config;
 use Dss\Opinion\Model\CustomerOpinionFactory;
 use Dss\Opinion\Model\OpinionFactory;
 use Magento\Customer\Model\Session;
@@ -29,6 +30,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 class ProductOpinionLabel implements HttpGetActionInterface
 {
     /**
+     * @param Config $Config
      * @param JsonFactory $jsonFactory
      * @param OpinionFactory $productOpinionFactory
      * @param CustomerOpinionFactory $customerOpinionFactory
@@ -36,6 +38,7 @@ class ProductOpinionLabel implements HttpGetActionInterface
      * @param RequestInterface $request
      */
     public function __construct(
+        protected Config $Config,
         protected JsonFactory $jsonFactory,
         protected OpinionFactory $productOpinionFactory,
         protected CustomerOpinionFactory $customerOpinionFactory,
@@ -80,7 +83,8 @@ class ProductOpinionLabel implements HttpGetActionInterface
         }
 
         $percentage = $totalOpinions ? round(($totalLikes / $totalOpinions) * 100) : 0;
-        $minThreshold = 2;
+        $minThreshold = $this->Config->getMinimumOpinionThreshold();
+        $minLike = $this->Config->getMinimumLikePercentage();
         $message = '';
         $class = '';
 
@@ -116,7 +120,7 @@ class ProductOpinionLabel implements HttpGetActionInterface
                 $class = 'mixed';
             }
         } else {
-            if ($percentage >= 60) {
+            if ($percentage >= $minLike) {
                 $message = $customerOpinion !== null
                     ? ($customerOpinion ? __(
                         'You and %1% of our %2 customers liked this product',

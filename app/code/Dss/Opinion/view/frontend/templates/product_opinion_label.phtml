@@ -19,15 +19,17 @@ $product = $block->getLayout()->getBlock('product.info')->getProduct();
 $productId = $product ? $product->getId() : 0;
 ?>
 
-<div class="product-opinion-label" id="product-opinion-label" style="display: none;"></div>
+<?php if ($block->isOpinionLabelEnabled()): ?>
+    <div class="product-opinion-label" id="product-opinion-label" style="display: none;"></div>
 
-<script type="text/x-magento-init">
-    {
-        "#product-opinion-label": {
-            "productOpinionLabel": {
-                "labelUrl": "<?= /* @noEscape */ $block->getAjaxUrl() ?>",
-                "productId": "<?= /* @noEscape */ (int) $productId ?>"
+    <script type="text/x-magento-init">
+        {
+            "#product-opinion-label": {
+                "productOpinionLabel": {
+                    "labelUrl": "<?= /* @noEscape */ $block->getAjaxUrl() ?>",
+                    "productId": "<?= /* @noEscape */ (int) $productId ?>"
+                }
             }
         }
-    }
-</script>
+    </script>
+<?php endif; ?>
