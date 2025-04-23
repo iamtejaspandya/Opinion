@@ -71,6 +71,16 @@ class OpinionButton extends Template
     }
 
     /**
+     * Check if customers are allowed to submit opinions
+     *
+     * @return bool
+     */
+    public function isOpinionSubmissionAllowed(): bool
+    {
+        return $this->Config->isOpinionSubmissionAllowed();
+    }
+
+    /**
      * Get Product ID
      *
      * @return int|null

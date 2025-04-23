@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Digit Software Solutions.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category  Dss
+ * @package   Dss_Opinion
+ * @author    Extension Team
+ * @copyright Copyright (c) 2025 Digit Software Solutions. ( https://digitsoftsol.com )
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="opinion" translate="label" sortOrder="10"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Product Opinions</label>
+            <tab>dss</tab>
+            <resource>Dss_Opinion::opinion_config</resource>
+
+            <!-- General Settings -->
+            <group id="general" translate="label" sortOrder="10"
+                showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Settings</label>
+
+                <field id="enable_product_opinion" translate="label" type="select"
+                    sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Product Opinion</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="get_opinion" translate="label" type="select"
+                    sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Allow Customers to Submit Opinions</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enable_product_opinion">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <!-- Opinion Label Settings -->
+            <group id="opinion_label" translate="label" sortOrder="15"
+                showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Product Opinion Label</label>
+
+                <field id="show_opinion_label" translate="label" type="select"
+                    sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Product Opinion Label</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="min_threshold" translate="label comment" type="text" sortOrder="15"
+                    showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Minimum Threshold</label>
+                    <comment><![CDATA[
+                        The minimum number of opinions required for a product before displaying percentage-based data.
+                        <br />
+                        Example: If set to 5,
+                        Percentage labels will only be displayed when at least 5 opinions exist in the product.]]>
+                    </comment>
+                    <validate>validate-zero-or-greater required-entry</validate>
+                    <depends>
+                        <field id="show_opinion_label">1</field>
+                    </depends>
+                </field>
+
+                <field id="min_like" translate="label comment" type="text" sortOrder="20"
+                    showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Minimum Like Percentage</label>
+                    <comment><![CDATA[
+                        The minimum percentage of Liked opinions required for a product before
+                        displaying percentage-based data.
+                        <br />
+                        Example: If set to 70,
+                        percentage labels will be displayed only when at least 70% liked opinions exist.]]>
+                    </comment>
+                    <validate>validate-zero-or-greater required-entry</validate>
+                    <depends>
+                        <field id="show_opinion_label">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
