@@ -24,6 +24,7 @@ use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerC
 use Magento\Customer\Setup\CustomerSetup;
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\SetFactory;
+use Magento\Eav\Model\Entity\Attribute\Source\Boolean;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\Setup\Patch\PatchRevertableInterface;
@@ -83,7 +84,7 @@ class AddCanGiveOpinionAttribute implements DataPatchInterface, PatchRevertableI
                 'is_visible_in_grid' => true,
                 'is_filterable_in_grid' => true,
                 'is_searchable_in_grid' => true,
-                'source' => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
+                'source' => Boolean::class,
             ]
         );
 
