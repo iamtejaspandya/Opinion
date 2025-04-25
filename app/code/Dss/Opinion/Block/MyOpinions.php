@@ -18,36 +18,42 @@ declare(strict_types=1);
 
 namespace Dss\Opinion\Block;
 
+use Dss\Opinion\Model\Config;
 use Dss\Opinion\Model\ResourceModel\CustomerOpinion\Collection;
 use Dss\Opinion\Model\ResourceModel\CustomerOpinion\CollectionFactory;
-use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Image;
-use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Theme\Block\Html\Pager;
 
-class MyOpinions extends Template
+class MyOpinions extends AbstractOpinion
 {
     /**
+     * Constructor.
+     *
      * @param Context $context
-     * @param CustomerSession $customerSession
-     * @param CollectionFactory $opinionCollectionFactory
+     * @param Config $config
      * @param ProductRepositoryInterface $productRepository
+     * @param CollectionFactory $opinionCollectionFactory
      * @param Image $imageHelper
      * @param array $data
      */
     public function __construct(
         Context $context,
-        private CustomerSession $customerSession,
-        private CollectionFactory $opinionCollectionFactory,
-        private ProductRepositoryInterface $productRepository,
-        private Image $imageHelper,
+        Config $config,
+        ProductRepositoryInterface $productRepository,
+        protected CollectionFactory $opinionCollectionFactory,
+        protected Image $imageHelper,
         array $data = []
     ) {
-        parent::__construct($context, $data);
+        parent::__construct(
+            $context,
+            $config,
+            $productRepository,
+            $data
+        );
     }
 
     /**
@@ -57,15 +63,11 @@ class MyOpinions extends Template
      */
     public function getCustomerOpinions(): Collection
     {
-        $customerId = $this->customerSession->getCustomerId();
         $collection = $this->opinionCollectionFactory->create()
-            ->addFieldToFilter('customer_id', $customerId);
+            ->addFieldToFilter('customer_id', $this->config->getCustomerId());
 
-        $currentPage = (int) ($this->getRequest()->getParam('p') ?? 1);
-        $pageSize = (int) ($this->getRequest()->getParam('limit') ?? 5);
-
-        $collection->setCurPage($currentPage);
-        $collection->setPageSize($pageSize);
+        $collection->setCurPage((int)($this->getRequest()->getParam('p') ?? 1));
+        $collection->setPageSize((int)($this->getRequest()->getParam('limit') ?? 5));
 
         return $collection;
     }
@@ -102,15 +104,14 @@ class MyOpinions extends Template
     protected function _prepareLayout()
     {
         parent::_prepareLayout();
-
         $collection = $this->getCustomerOpinions();
         if ($collection->getSize()) {
             $pager = $this->getLayout()->createBlock(
                 Pager::class,
                 'product.opinion.pager'
             )->setAvailableLimit([5 => 5, 10 => 10, 15 => 15])
-            ->setShowPerPage(true)
-            ->setCollection($collection);
+                ->setShowPerPage(true)
+                ->setCollection($collection);
 
             $this->setChild('pager', $pager);
         }
@@ -123,7 +124,7 @@ class MyOpinions extends Template
      *
      * @return string
      */
-    public function getPagerHtml()
+    public function getPagerHtml(): string
     {
         return $this->getChildHtml('pager');
     }

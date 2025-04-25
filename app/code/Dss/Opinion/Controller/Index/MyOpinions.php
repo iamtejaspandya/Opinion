@@ -31,7 +31,7 @@ use Magento\Framework\View\Result\PageFactory;
 class MyOpinions implements HttpGetActionInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PageFactory $pageFactory
      * @param HttpContext $httpContext

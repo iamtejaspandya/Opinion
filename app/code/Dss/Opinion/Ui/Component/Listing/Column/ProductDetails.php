@@ -27,6 +27,8 @@ use Magento\Ui\Component\Listing\Columns\Column;
 class ProductDetails extends Column
 {
     /**
+     * Constructor.
+     *
      * @param ContextInterface $context
      * @param UiComponentFactory $uiComponentFactory
      * @param ProductRepositoryInterface $productRepository
@@ -37,8 +39,8 @@ class ProductDetails extends Column
     public function __construct(
         ContextInterface $context,
         UiComponentFactory $uiComponentFactory,
-        private ProductRepositoryInterface $productRepository,
-        private CollectionFactory $opinionCollectionFactory,
+        protected ProductRepositoryInterface $productRepository,
+        protected CollectionFactory $opinionCollectionFactory,
         array $components = [],
         array $data = []
     ) {

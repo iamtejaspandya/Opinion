@@ -18,28 +18,8 @@ declare(strict_types=1);
 
 namespace Dss\Opinion\Block;
 
-use Dss\Opinion\Model\Config;
-use Magento\Framework\View\Element\Template;
-use Magento\Framework\View\Element\Template\Context;
-
-class ProductOpinionLabel extends Template
+class ProductOpinionLabel extends AbstractOpinion
 {
-    /**
-     * @param Context $context
-     * @param Config $Config
-     * @param array $data
-     */
-    public function __construct(
-        Context $context,
-        private Config $Config,
-        array $data = []
-    ) {
-        parent::__construct(
-            $context,
-            $data
-        );
-    }
-
     /**
      * Check if opinion label should be shown on product page
      *
@@ -47,7 +27,7 @@ class ProductOpinionLabel extends Template
      */
     public function isOpinionLabelEnabled(): bool
     {
-        return $this->Config->isOpinionLabelEnabled();
+        return $this->config->isOpinionLabelEnabled();
     }
 
     /**

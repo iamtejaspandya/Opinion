@@ -29,7 +29,7 @@ class Opinion extends AbstractModel
     protected $_idFieldName = 'opinion_id';
 
     /**
-     * Initialize Opinion model
+     * Initialize Product Opinion model
      *
      * @return void
      */

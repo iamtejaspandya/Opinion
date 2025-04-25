@@ -29,6 +29,8 @@ use Magento\Framework\Controller\ResultInterface;
 class Status implements HttpGetActionInterface
 {
     /**
+     * Constructor.
+     *
      * @param CustomerSession $customerSession
      * @param CustomerOpinionFactory $customerProductOpinionFactory
      * @param CustomerOpinionResource $customerOpinionResource

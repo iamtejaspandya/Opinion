@@ -19,148 +19,109 @@ declare(strict_types=1);
 namespace Dss\Opinion\Block;
 
 use Dss\Opinion\Model\Config;
-use Dss\Opinion\Model\ResourceModel\CustomerOpinion\CollectionFactory as OpinionCollectionFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Customer\Api\Data\CustomerInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\Context as CustomerContext;
 use Magento\Framework\App\Http\Context as HttpContext;
-use Magento\Framework\Url\EncoderInterface;
 use Magento\Framework\UrlInterface;
-use Magento\Framework\View\Element\Template;
+use Magento\Framework\Url\EncoderInterface;
 use Magento\Framework\View\Element\Template\Context;
 
-class OpinionButton extends Template
+class OpinionButton extends AbstractOpinion
 {
     /**
+     * Constructor.
+     *
      * @param Context $context
-     * @param Config $Config
+     * @param Config $config
      * @param ProductRepositoryInterface $productRepository
-     * @param CustomerRepositoryInterface $customerRepository
-     * @param HttpContext $httpContext
-     * @param OpinionCollectionFactory $opinionCollectionFactory
+     * @param Context $httpContext
      * @param EncoderInterface $urlEncoder
      * @param UrlInterface $urlBuilder
      * @param array $data
      */
     public function __construct(
         Context $context,
-        private Config $Config,
-        private ProductRepositoryInterface $productRepository,
-        private CustomerRepositoryInterface $customerRepository,
-        private HttpContext $httpContext,
-        private OpinionCollectionFactory $opinionCollectionFactory,
-        private EncoderInterface $urlEncoder,
-        private UrlInterface $urlBuilder,
+        Config $config,
+        ProductRepositoryInterface $productRepository,
+        protected HttpContext $httpContext,
+        protected EncoderInterface $urlEncoder,
+        protected UrlInterface $urlBuilder,
         array $data = []
     ) {
         parent::__construct(
             $context,
+            $config,
+            $productRepository,
             $data
         );
     }
 
     /**
-     * Check if product opinion functionality is enabled
+     * Check if product opinion is enabled.
      *
      * @return bool
      */
     public function isProductOpinionEnabled(): bool
     {
-        return $this->Config->isProductOpinionEnabled();
+        return $this->config->isProductOpinionEnabled();
     }
 
     /**
-     * Check if customers are allowed to submit opinions
+     * Check if opinion submission is allowed.
      *
      * @return bool
      */
     public function isOpinionSubmissionAllowed(): bool
     {
-        return $this->Config->isOpinionSubmissionAllowed();
+        return $this->config->isOpinionSubmissionAllowed();
     }
 
     /**
-     * Get Product ID
+     * Get the configured message to show when opinion submission is disabled
+     *
+     * @return string
+     */
+    public function getOpinionDisabledMessage(): string
+    {
+        return $this->config->getOpinionDisabledMessage();
+    }
+
+    /**
+     * Get Product ID from request.
      *
      * @return int|null
      */
     public function getProductId(): ?int
     {
-        return (int) $this->getRequest()->getParam('id');
+        return (int)$this->getRequest()->getParam('id');
     }
 
     /**
-     * Get Product Name
+     * Get the product name.
      *
      * @return string
      */
     public function getProductName(): string
     {
         try {
-            $product = $this->productRepository->getById($this->getProductId());
-            return $product->getName();
+            return $this->productRepository->getById($this->getProductId())->getName();
         } catch (\Exception $e) {
             return '';
         }
     }
 
     /**
-     * Check if customer is logged in
+     * Check if the customer is logged in.
      *
      * @return bool
      */
     public function isCustomerLoggedIn(): bool
     {
-        return (bool) $this->httpContext->getValue(CustomerContext::CONTEXT_AUTH);
+        return (bool)$this->httpContext->getValue(CustomerContext::CONTEXT_AUTH);
     }
 
     /**
-     * Get Customer Data
-     *
-     * @return CustomerInterface|null
-     */
-    public function getCustomerData(): ?CustomerInterface
-    {
-        if ($this->isCustomerLoggedIn()) {
-            $customerId = $this->httpContext->getValue(CustomerContext::CONTEXT_AUTH);
-            return $this->customerRepository->getById($customerId);
-        }
-        return null;
-    }
-
-    /**
-     * Get Customer Opinion
-     *
-     * @return int|null
-     */
-    public function getCustomerOpinion(): ?int
-    {
-        if (!$this->isCustomerLoggedIn()) {
-            return null;
-        }
-
-        $customerId = (int) $this->httpContext->getValue(CustomerContext::CONTEXT_AUTH);
-
-        $collection = $this->opinionCollectionFactory->create()
-            ->addFieldToFilter('customer_id', $customerId)
-            ->addFieldToFilter('product_id', $this->getProductId());
-
-        return (int) $collection->getFirstItem()->getOpinion() ?: null;
-    }
-
-    /**
-     * Get form action URL
-     *
-     * @return string
-     */
-    public function getFormAction(): string
-    {
-        return $this->getUrl('opinion/index/save');
-    }
-
-    /**
-     * Get current URL encoded for redirect after login
+     * Get the URL for the opinion submission form.
      *
      * @return string
      */
