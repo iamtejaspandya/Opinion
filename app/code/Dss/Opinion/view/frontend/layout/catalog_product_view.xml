@@ -21,7 +21,8 @@
             <block class="Dss\Opinion\Block\OpinionButton"
                    name="product.opinion.button"
                    template="Dss_Opinion::opinion_button.phtml"
-                   after="product.info.price"/>
+                   after="product.info.price"
+                   cacheable="false"/>
         </referenceContainer>
         <referenceContainer name="product.info.media">
             <block class="Dss\Opinion\Block\ProductOpinionLabel"

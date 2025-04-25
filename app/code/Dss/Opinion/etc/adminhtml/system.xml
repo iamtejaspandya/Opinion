@@ -42,6 +42,40 @@
                         <field id="enable_product_opinion">1</field>
                     </depends>
                 </field>
+
+                <field id="disabled_message" translate="label" type="textarea"
+                    sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Disabled Opinion Message</label>
+                    <comment><![CDATA[
+                        This message will be displayed when all customers are not allowed to submit opinions.
+                        <br />
+                        Example: "We are not accepting product opinions at the moment, Please check back later."
+                        <br />
+                        If you don't want to show any message, leave this field empty.]]>
+                    </comment>
+                    <depends>
+                        <field id="enable_product_opinion">1</field>
+                        <field id="get_opinion">0</field>
+                    </depends>
+                </field>
+
+                <field id="not_allow_message" translate="label" type="textarea"
+                    sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Disallowed Customers Message</label>
+                    <comment><![CDATA[
+                        You can disallow a customer by the "Can Give Opinion?" to "No" in the customer edit page under
+                        Customers > All Customers > [Edit Customer] > Account Information.
+                        <br />
+                        This message will be displayed when specific customers are not allowed to submit opinions.
+                        <br />
+                        Example: "You are not allowed to give an opinion, please contact us for more information."
+                        <br />
+                        If you don't want to show any message, leave this field empty.]]>
+                    </comment>
+                    <depends>
+                        <field id="enable_product_opinion">1</field>
+                    </depends>
+                </field>
             </group>
 
             <!-- Opinion Label Settings -->

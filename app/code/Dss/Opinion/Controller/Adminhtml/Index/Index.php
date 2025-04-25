@@ -26,14 +26,14 @@ use Magento\Framework\View\Result\PageFactory;
 class Index extends Action
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Context $context
      * @param PageFactory $pageFactory
      */
     public function __construct(
         Context $context,
-        private PageFactory $pageFactory
+        protected PageFactory $pageFactory
     ) {
         parent::__construct($context);
     }

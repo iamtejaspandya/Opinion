@@ -30,6 +30,8 @@ use Magento\Framework\Controller\Result\JsonFactory;
 class ProductOpinionLabel implements HttpGetActionInterface
 {
     /**
+     * Constructor.
+     *
      * @param Config $Config
      * @param JsonFactory $jsonFactory
      * @param OpinionFactory $productOpinionFactory
@@ -58,14 +60,10 @@ class ProductOpinionLabel implements HttpGetActionInterface
         $productId = (int) $this->request->getParam('product_id');
 
         if (!$productId) {
-            return $resultJson->setData(['error' => true, 'message' => __('Invalid product.')]);
+            return $resultJson->setData(['error' => true, 'message' => __('Invalid product.'), 'class' => 'error']);
         }
 
         $opinion = $this->productOpinionFactory->create()->load($productId, 'product_id');
-
-        if (!$opinion->getId()) {
-            return $resultJson->setData(['error' => true, 'message' => __('No opinion found.')]);
-        }
 
         $totalLikes = (int) $opinion->getTotalLikeOpinionCount();
         $totalDislikes = (int) $opinion->getTotalDislikeOpinionCount();
@@ -93,10 +91,10 @@ class ProductOpinionLabel implements HttpGetActionInterface
             $class = 'no-opinion';
         } elseif ($totalOpinions === 1) {
             $message = $customerOpinion !== null
-                ? ($customerOpinion ? __('This product got your like!')
-                                    : __('Not your favorite.'))
+                ? ($customerOpinion ? __('First opinion in — and it’s a thumbs-up!')
+                                    : __('First opinion in — not your favorite.'))
                 : __('One opinion in! Share yours!');
-            $class = 'no-opinion';
+            $class = 'one-opinion';
         } elseif ($totalOpinions < $minThreshold) {
             if ($totalLikes > 0 && $totalDislikes === 0) {
                 if ($customerOpinion !== null && $customerOpinion) {

@@ -18,10 +18,12 @@ declare(strict_types=1);
 
 namespace Dss\Opinion\Controller\Index;
 
+use Dss\Opinion\Model\Config;
 use Dss\Opinion\Model\CustomerOpinionFactory;
 use Dss\Opinion\Model\OpinionFactory;
 use Dss\Opinion\Model\ResourceModel\CustomerOpinion as CustomerOpinionResource;
 use Dss\Opinion\Model\ResourceModel\Opinion as ProductOpinionResource;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
@@ -34,6 +36,9 @@ use Psr\Log\LoggerInterface;
 class Save implements HttpPostActionInterface
 {
     /**
+     * Constructor.
+     *
+     * @param Config $config
      * @param CustomerSession $customerSession
      * @param CustomerOpinionFactory $customerProductOpinionFactory
      * @param OpinionFactory $productOpinionFactory
@@ -44,8 +49,10 @@ class Save implements HttpPostActionInterface
      * @param RequestInterface $request
      * @param ManagerInterface $messageManager
      * @param LoggerInterface $logger
+     * @param ProductRepositoryInterface $productRepository
      */
     public function __construct(
+        protected Config $config,
         protected CustomerSession $customerSession,
         protected CustomerOpinionFactory $customerProductOpinionFactory,
         protected OpinionFactory $productOpinionFactory,
@@ -55,7 +62,8 @@ class Save implements HttpPostActionInterface
         protected UrlInterface $url,
         protected RequestInterface $request,
         protected ManagerInterface $messageManager,
-        protected LoggerInterface $logger
+        protected LoggerInterface $logger,
+        protected ProductRepositoryInterface $productRepository
     ) {
     }
 
@@ -67,11 +75,15 @@ class Save implements HttpPostActionInterface
     public function execute(): ResultInterface
     {
         $resultJson = $this->jsonFactory->create();
+        $data = $this->request->getPostValue();
+        $productId = (int)$data['product_id'];
+        $productUrl = $this->getProductUrl($productId);
 
         if (!$this->customerSession->isLoggedIn()) {
             $this->messageManager->addErrorMessage(
-                __('Your session has expired. Please log in again to submit your opinion.')
+                __('Looks like you\'re logged out. Please sign in to share your thoughts!')
             );
+
             return $this->jsonFactory->create()->setData([
                 'success' => false,
                 'redirect' => true,
@@ -79,7 +91,41 @@ class Save implements HttpPostActionInterface
             ]);
         }
 
-        $data = $this->request->getPostValue();
+        if (!$this->config->isProductOpinionEnabled()) {
+            $this->messageManager->addErrorMessage(
+                __('The product opinion feature is currently disabled.')
+            );
+
+            return $this->jsonFactory->create()->setData([
+                'success' => false,
+                'redirect' => true,
+                'redirect_url' => $this->url->getUrl($productUrl)
+            ]);
+        }
+
+        if (!$this->config->isOpinionSubmissionAllowed()) {
+            $this->messageManager->addErrorMessage(
+                __('We appreciate your opinion! However, submissions are currently turned off.')
+            );
+
+            return $this->jsonFactory->create()->setData([
+                'success' => false,
+                'redirect' => true,
+                'redirect_url' => $this->url->getUrl($productUrl)
+            ]);
+        }
+
+        if (!$this->config->canCustomerGiveOpinion()) {
+            $this->messageManager->addErrorMessage(
+                __('Your account is currently restricted from submitting opinions.')
+            );
+
+            return $this->jsonFactory->create()->setData([
+                'success' => false,
+                'redirect' => true,
+                'redirect_url' => $this->url->getUrl($productUrl)
+            ]);
+        }
 
         if (!empty($data['product_id']) && isset($data['opinion'])) {
             try {
@@ -147,7 +193,7 @@ class Save implements HttpPostActionInterface
      * @param string $productName
      * @return void
      */
-    private function updateProductOpinionCounts(int $productId, string $productName): void
+    public function updateProductOpinionCounts(int $productId, string $productName): void
     {
         try {
             $connection = $this->customerOpinionResource->getConnection();
@@ -184,5 +230,26 @@ class Save implements HttpPostActionInterface
         } catch (\Exception $e) {
             $this->logger->error('Error updating product opinion counts: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Get product URL by productId
+     *
+     * @param int $productId
+     * @return string
+     */
+    public function getProductUrl(int $productId): string
+    {
+        try {
+            if ($productId) {
+                $product = $this->productRepository->getById($productId);
+
+                return $product->getProductUrl();
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Error getting product URL: ' . $e->getMessage());
+        }
+
+        return $this->url->getBaseUrl();
     }
 }

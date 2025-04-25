@@ -21,52 +21,61 @@
     <div class="dss-opinion">
         <?php if ($block->isOpinionSubmissionAllowed()): ?>
             <?php if ($block->isCustomerLoggedIn()): ?>
-                <div id="opinion-wrapper" class="opinion-wrapper">
-                    <div id="opinion-container" class="opinion-container"></div>
-                    <div id="opinion-message" class="opinion-message"></div>
-                </div>
+                <?php if ($block->canCustomerGiveOpinion()): ?>
+                    <div id="opinion-wrapper" class="opinion-wrapper">
+                        <div id="opinion-container" class="opinion-container"></div>
+                        <div id="opinion-message" class="opinion-message"></div>
+                    </div>
 
-                <?php
-                    $statusUrl = $escaper->escapeJs($block->getUrl('opinion/index/status'));
-                    $saveUrl = $escaper->escapeJs($block->getUrl('opinion/index/save'));
-                    $labelUrl = $escaper->escapeJs($block->getUrl('opinion/index/productopinionlabel'));
-                    $formKey = $escaper->escapeJs($block->getFormKey());
-                    $productId = $escaper->escapeJs($block->getProductId());
-                    $productName = $escaper->escapeJs($block->getProductName());
+                    <?php
+                        $statusUrl = $escaper->escapeJs($block->getUrl('opinion/index/status'));
+                        $saveUrl = $escaper->escapeJs($block->getUrl('opinion/index/save'));
+                        $labelUrl = $escaper->escapeJs($block->getUrl('opinion/index/productopinionlabel'));
+                        $formKey = $escaper->escapeJs($block->getFormKey());
+                        $productId = $escaper->escapeJs($block->getProductId());
+                        $productName = $escaper->escapeJs($block->getProductName());
+                        $likeMessage = $escaper->escapeJs(__(
+                            'You liked ' . $block->getProductName() . ', Do you change your opinion?'
+                        ));
+                        $dislikeMessage = $escaper->escapeJs(__(
+                            'You disliked ' . $block->getProductName() . ', Do you change your opinion?'
+                        ));
+                        $defaultMessage = $escaper->escapeJs(__(
+                            'Please give your opinion for ' . $block->getProductName() . '.'
+                        ));
+                    ?>
 
-                    $likeMessage = $escaper->escapeJs(__(
-                        'You liked ' . $block->getProductName() . ', Do you change your opinion?'
-                    ));
-                    $dislikeMessage = $escaper->escapeJs(__(
-                        'You disliked ' . $block->getProductName() . ', Do you change your opinion?'
-                    ));
-                    $defaultMessage = $escaper->escapeJs(__(
-                        'Please give your opinion for ' . $block->getProductName() . '.'
-                    ));
-                ?>
-
-                <script type="text/x-magento-init">
-                    {
-                        "#opinion-wrapper": {
-                            "opinionHandler": {
-                                "statusUrl": "<?= /* @noEscape */ $statusUrl ?>",
-                                "saveUrl": "<?= /* @noEscape */ $saveUrl ?>",
-                                "labelUrl": "<?= /* @noEscape */ $labelUrl ?>",
-                                "formKey": "<?= /* @noEscape */ $formKey ?>",
-                                "productId": "<?= /* @noEscape */ $productId ?>",
-                                "productName": "<?= /* @noEscape */ $productName ?>",
-                                "likeMessage": "<?= /* @noEscape */ $likeMessage ?>",
-                                "dislikeMessage": "<?= /* @noEscape */ $dislikeMessage ?>",
-                                "defaultMessage": "<?= /* @noEscape */ $defaultMessage ?>",
-                                "likeLabel": "<?= $escaper->escapeJs(__('Like')) ?>",
-                                "dislikeLabel": "<?= $escaper->escapeJs(__('Dislike')) ?>",
-                                "errorMessage": "<?= $escaper->escapeJs(__('Something went wrong.')) ?>"
+                    <script type="text/x-magento-init">
+                        {
+                            "#opinion-wrapper": {
+                                "opinionHandler": {
+                                    "statusUrl": "<?= /* @noEscape */ $statusUrl ?>",
+                                    "saveUrl": "<?= /* @noEscape */ $saveUrl ?>",
+                                    "labelUrl": "<?= /* @noEscape */ $labelUrl ?>",
+                                    "formKey": "<?= /* @noEscape */ $formKey ?>",
+                                    "productId": "<?= /* @noEscape */ $productId ?>",
+                                    "productName": "<?= /* @noEscape */ $productName ?>",
+                                    "likeMessage": "<?= /* @noEscape */ $likeMessage ?>",
+                                    "dislikeMessage": "<?= /* @noEscape */ $dislikeMessage ?>",
+                                    "defaultMessage": "<?= /* @noEscape */ $defaultMessage ?>",
+                                    "likeLabel": "<?= $escaper->escapeJs(__('Like')) ?>",
+                                    "dislikeLabel": "<?= $escaper->escapeJs(__('Dislike')) ?>",
+                                    "errorMessage": "<?= $escaper->escapeJs(__('Something went wrong.')) ?>"
+                                }
                             }
                         }
-                    }
-                </script>
+                    </script>
+                <?php else: ?>
+                    <?php if ($block->getDisallowedCustomerMessage()): ?>
+                        <div class="message error empty disallowed-customer">
+                            <div>
+                                <?= /* @noEscape */ __($block->getDisallowedCustomerMessage()) ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
             <?php else: ?>
-                <div class="message info empty">
+                <div class="message info empty not-logged-in">
                     <div>
                         <?= /* @noEscape */ __(
                             'Only registered users can leave an opinion.
@@ -83,13 +92,13 @@
                 </div>
             <?php endif; ?>
         <?php else: ?>
-            <div class="message info empty">
-                <div>
-                    <?= /* @noEscape */ __(
-                        'We are not accepting product opinions at the moment. Please check back later.',
-                    ) ?>
+            <?php if ($block->getOpinionDisabledMessage()): ?>
+                <div class="message info empty disable-message">
+                    <div>
+                        <?= /* @noEscape */ __($block->getOpinionDisabledMessage()) ?>
+                    </div>
                 </div>
-            </div>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 <?php endif; ?>

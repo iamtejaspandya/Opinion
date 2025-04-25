@@ -5,7 +5,7 @@ define(['jquery'], function ($) {
         let $label = $(element);
         let productId = config.productId;
         let url = config.labelUrl;
-        let classes = 'liked someliked mixed not-enough no-opinion error';
+        let classes = 'one-opinion liked someliked mixed not-enough no-opinion error';
 
         function updateLabel(text, className) {
             $label.html(text).removeClass(classes).addClass(className).show();
@@ -17,10 +17,12 @@ define(['jquery'], function ($) {
                 type: 'GET',
                 data: { product_id: productId },
                 success: function (response) {
-                    if (response.success) {
+                    if (response.error) {
+                        updateLabel(response.message, response.class);
+                    } else if (response.success) {
                         updateLabel(response.message, response.class);
                     } else {
-                        updateLabel('Be the first to share your opinion!', 'no-opinion');
+                        updateLabel('Unexpected response.', 'error');
                     }
                 },
                 error: function () {
