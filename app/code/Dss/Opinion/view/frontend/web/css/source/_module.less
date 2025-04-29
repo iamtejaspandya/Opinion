@@ -145,6 +145,67 @@
     }
 }
 
+.opinion-stats {
+    display: block;
+
+    .chart-type-selector-wrapper {
+        align-items: center;
+        display: grid;
+        float: right;
+        grid-template-columns: 120px 1fr;
+        max-width: 300px;
+    }
+
+    .charts-wrapper {
+        display: flex;
+        padding-top: 32px;
+        width: 100%;
+    }
+
+    .opinion-chart {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        margin: 10px auto;
+        width: 40%;
+
+        label {
+            font-size: 12px;
+            font-weight: 500;
+
+            span {
+                font-size: 14px;
+                font-weight: 600;
+            }
+        }
+
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .opinion-stats {
+        .opinion-chart {
+            width: 285px;
+        }
+    }
+}
+
+@media only screen and (max-width: 640px) {
+    .opinion-stats {
+        .opinion-chart {
+            width: 250px;
+        }
+    }
+}
+
+@media only screen and (max-width: 520px) {
+    .opinion-stats {
+        .charts-wrapper {
+            flex-direction: column;
+        }
+    }
+}
+
 .product-opinion-label {
     animation: fadeInScale .4s ease-in-out forwards;
     border-radius: 5px;

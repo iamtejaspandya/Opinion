@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * Digit Software Solutions.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category  Dss
+ * @package   Dss_Opinion
+ * @author    Extension Team
+ * @copyright Copyright (c) 2025 Digit Software Solutions. ( https://digitsoftsol.com )
+ */
+
+/** @var \Magento\Framework\View\Element\Template $block */
+$parentBlock = $block->getParentBlock();
+$opinionStats = $parentBlock ? $parentBlock->getOpinionStats() : [];
+?>
+
+<?php if ($opinionStats['likes'] || $opinionStats['dislikes']): ?>
+    <div class="opinion-chart opinion-chart-container-total">
+        <canvas id="opinion-chart" class="page-opinion-chart"></canvas>
+        <?php if ($parentBlock->isOpinionChartTotalEnabled()): ?>
+            <label class="opinion-chart-total">
+                <?= $escaper->escapeHtml(__('Total Opinions:')) ?>
+                <span class="total-opinions">
+                    <?= $escaper->escapeHtml($opinionStats['total']) ?>
+                </span>
+            </label>
+        <?php endif; ?>
+        <?php if ($parentBlock->isOpinionChartPercentageEnabled()): ?>
+            <label class="opinion-chart-percentage">
+                <?= $escaper->escapeHtml(__('Total Like in Percentage:')) ?>
+                <span class="total-opinions">
+                    <?= $escaper->escapeHtml($opinionStats['like_percent'] . '%') ?>
+                </span>
+            </label>
+        <?php endif; ?>
+    </div>
+
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "Magento_Ui/js/core/app": {
+                    "components": {
+                        "opinionChartComponent": {
+                            "component": "opinionChartComponent",
+                            "chartData": {
+                                "likes": <?= (int)$opinionStats['likes'] ?>,
+                                "dislikes": <?= (int)$opinionStats['dislikes'] ?>
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+<?php endif; ?>

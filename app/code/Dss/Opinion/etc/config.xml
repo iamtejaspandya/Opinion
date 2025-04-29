@@ -18,6 +18,7 @@
     xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/config.xsd">
     <default>
         <opinion>
+            <!-- General Config -->
             <general>
                 <enable_product_opinion>1</enable_product_opinion>
                 <get_opinion>1</get_opinion>
@@ -29,11 +30,21 @@
                 </not_allow_message>
             </general>
 
+            <!-- Opinion Label Config -->
             <opinion_label>
                 <show_opinion_label>1</show_opinion_label>
                 <min_threshold>5</min_threshold>
                 <min_like>70</min_like>
             </opinion_label>
+
+            <!-- My Opinion Page Config -->
+            <opinion_page>
+                <show_opinion_stats_chart>1</show_opinion_stats_chart>
+                <show_opinion_chart>1</show_opinion_chart>
+                <show_current_opinion_chart>1</show_current_opinion_chart>
+                <show_chart_total>1</show_chart_total>
+                <show_chart_percentage>1</show_chart_percentage>
+            </opinion_page>
         </opinion>
     </default>
 </config>

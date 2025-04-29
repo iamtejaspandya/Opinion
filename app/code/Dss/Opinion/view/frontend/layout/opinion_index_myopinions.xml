@@ -17,21 +17,27 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <update handle="customer_account"/>
-
     <head>
         <title>My Opinions</title>
     </head>
-
     <body>
         <referenceBlock name="page.main.title">
             <action method="setPageTitle">
                 <argument translate="true" name="title" xsi:type="string">My Opinions</argument>
             </action>
         </referenceBlock>
-
         <referenceContainer name="content">
-            <block class="Dss\Opinion\Block\MyOpinions" name="dss.myopinions"
-                template="Dss_Opinion::my_opinions.phtml" cacheable="false"/>
+            <block class="Dss\Opinion\Block\MyOpinions"
+                   name="dss.myopinions"
+                   template="Dss_Opinion::my_opinions.phtml"
+                   cacheable="false">
+                <block class="Magento\Framework\View\Element\Template"
+                       name="opinion_stats"
+                       template="Dss_Opinion::opinion_stats.phtml"/>
+                <block class="Magento\Framework\View\Element\Template"
+                       name="current_page_opinion_stats"
+                       template="Dss_Opinion::current_page_opinion_stats.phtml"/>
+            </block>
         </referenceContainer>
     </body>
 </page>
