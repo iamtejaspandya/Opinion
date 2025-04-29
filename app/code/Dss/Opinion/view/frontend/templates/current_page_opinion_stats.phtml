@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * Digit Software Solutions.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category  Dss
+ * @package   Dss_Opinion
+ * @author    Extension Team
+ * @copyright Copyright (c) 2025 Digit Software Solutions. ( https://digitsoftsol.com )
+ */
+
+/** @var \Magento\Framework\View\Element\Template $block */
+$parentBlock = $block->getParentBlock();
+$opinionStats = $parentBlock ? $parentBlock->getOpinionStats() : [];
+?>
+
+<?php if ($opinionStats['current_page_likes'] || $opinionStats['current_page_dislikes']): ?>
+    <div class="opinion-chart opinion-chart-container-current">
+        <canvas id="page-opinion-chart" class="current-page-opinion-chart"></canvas>
+        <?php if ($parentBlock->isOpinionChartTotalEnabled()): ?>
+            <label class="opinion-chart-current">
+                <?= $escaper->escapeHtml(__('Current Page Opinions:')) ?>
+                <span class="current-opinions">
+                    <?= $escaper->escapeHtml($opinionStats['current_page_total']) ?>
+                </span>
+            </label>
+        <?php endif; ?>
+        <?php if ($parentBlock->isOpinionChartPercentageEnabled()): ?>
+            <label class="opinion-chart-percentage">
+                <?= $escaper->escapeHtml(__('Current Page Like in Percentage:')) ?>
+                <span class="total-opinions">
+                    <?= $escaper->escapeHtml($opinionStats['current_page_like_percent'] . '%') ?>
+                </span>
+            </label>
+        <?php endif; ?>
+    </div>
+
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "Magento_Ui/js/core/app": {
+                    "components": {
+                        "currentOpinionChartComponent": {
+                            "component": "currentOpinionChartComponent",
+                            "chartData": {
+                                "currentLikes": <?= (int)$opinionStats['current_page_likes'] ?>,
+                                "currentDislikes": <?= (int)$opinionStats['current_page_dislikes'] ?>
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+<?php endif; ?>

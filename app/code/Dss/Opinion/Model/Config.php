@@ -33,6 +33,11 @@ class Config
     public const XML_PATH_OPINION_LABEL_MIN_THRESHOLD = 'opinion/opinion_label/min_threshold';
     public const XML_PATH_OPINION_LABEL_MIN_LIKE = 'opinion/opinion_label/min_like';
     public const CUSTOMER_ATTRIBUTE_CODE = 'can_give_opinion';
+    public const XML_PATH_SHOW_OPINION_STATS_CHART = 'opinion/opinion_page/show_opinion_stats_chart';
+    public const XML_PATH_SHOW_OPINION_CHART = 'opinion/opinion_page/show_opinion_chart';
+    public const XML_PATH_SHOW_CURRENT_OPINION_CHART = 'opinion/opinion_page/show_current_opinion_chart';
+    public const XML_PATH_SHOW_CHART_TOTAL = 'opinion/opinion_page/show_chart_total';
+    public const XML_PATH_SHOW_CHART_PERCENTAGE = 'opinion/opinion_page/show_chart_percentage';
 
     /**
      * Constructor.
@@ -171,5 +176,70 @@ class Config
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * Check if opinion statistics chart should be shown on product page
+     *
+     * @return bool
+     */
+    public function isOpinionStatsChartEnabled(): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_SHOW_OPINION_STATS_CHART,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Check if opinion chart should be shown on product page
+     *
+     * @return bool
+     */
+    public function isOpinionChartEnabled(): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_SHOW_OPINION_CHART,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Check if current opinion chart should be shown
+     *
+     * @return bool
+     */
+    public function isCurrentOpinionChartEnabled(): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_SHOW_CURRENT_OPINION_CHART,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Check if opinion chart total should be shown
+     *
+     * @return bool
+     */
+    public function isOpinionChartTotalEnabled(): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_SHOW_CHART_TOTAL,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Check if opinion chart percentage should be shown
+     *
+     * @return bool
+     */
+    public function isOpinionChartPercentageEnabled(): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_SHOW_CHART_PERCENTAGE,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 }

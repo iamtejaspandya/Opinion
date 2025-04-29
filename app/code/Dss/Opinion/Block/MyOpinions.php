@@ -109,7 +109,12 @@ class MyOpinions extends AbstractOpinion
             $pager = $this->getLayout()->createBlock(
                 Pager::class,
                 'product.opinion.pager'
-            )->setAvailableLimit([5 => 5, 10 => 10, 15 => 15])
+            )->setAvailableLimit([
+                    5 => 5,
+                    10 => 10,
+                    15 => 15,
+                    20 => 20
+                ])
                 ->setShowPerPage(true)
                 ->setCollection($collection);
 
@@ -127,5 +132,108 @@ class MyOpinions extends AbstractOpinion
     public function getPagerHtml(): string
     {
         return $this->getChildHtml('pager');
+    }
+
+    /**
+     * Check if opinion statistics chart should be shown on product page
+     *
+     * @return bool
+     */
+    public function isOpinionStatsChartEnabled(): bool
+    {
+        return $this->config->isOpinionStatsChartEnabled();
+    }
+
+    /**
+     * Check if opinion chart should be shown on product page
+     *
+     * @return bool
+     */
+    public function isOpinionChartEnabled(): bool
+    {
+        return $this->config->isOpinionChartEnabled();
+    }
+
+    /**
+     * Check if current opinion chart should be shown
+     *
+     * @return bool
+     */
+    public function isCurrentOpinionChartEnabled(): bool
+    {
+        return $this->config->isCurrentOpinionChartEnabled();
+    }
+
+    /**
+     * Check if opinion chart total should be shown
+     *
+     * @return bool
+     */
+    public function isOpinionChartTotalEnabled(): bool
+    {
+        return $this->config->isOpinionChartTotalEnabled();
+    }
+
+    /**
+     * Check if opinion chart percentage should be shown
+     *
+     * @return bool
+     */
+    public function isOpinionChartPercentageEnabled(): bool
+    {
+        return $this->config->isOpinionChartPercentageEnabled();
+    }
+
+    /**
+     * Get opinion statistics for current customer.
+     *
+     * @return array
+     */
+    public function getOpinionStats(): array
+    {
+        $currentPageOpinions = $this->getCustomerOpinions();
+        $customerOpinions = $this->opinionCollectionFactory->create()
+            ->addFieldToFilter('customer_id', $this->config->getCustomerId());
+        $likeCount = 0;
+        $currentPageLikeCount = 0;
+        $dislikeCount = 0;
+        $currentPageDislikeCount = 0;
+
+        foreach ($customerOpinions as $opinion) {
+            if ((int)$opinion->getOpinion() === 1) {
+                $likeCount++;
+            } else {
+                $dislikeCount++;
+            }
+        }
+
+        $likePercent = $likeCount > 0 ? round(
+            ($likeCount / ($likeCount + $dislikeCount)) * 100,
+            2
+        ) : 0;
+
+        foreach ($currentPageOpinions as $opinion) {
+            if ((int)$opinion->getOpinion() === 1) {
+                $currentPageLikeCount++;
+            } else {
+                $currentPageDislikeCount++;
+            }
+        }
+
+        $currentLikePercent = $currentPageLikeCount > 0 ? round(
+            ($currentPageLikeCount / ($currentPageLikeCount + $currentPageDislikeCount)) * 100,
+            2
+        ) : 0;
+
+        return [
+            'likes' => $likeCount,
+            'like_percent' => $likePercent,
+            'dislikes' => $dislikeCount,
+            'current_page_likes' => $currentPageLikeCount,
+            'current_page_like_percent' => $currentLikePercent,
+            'current_page_dislikes' => $currentPageDislikeCount,
+            'total' => $likeCount + $dislikeCount,
+            'current_page_total' => $currentPageLikeCount + $currentPageDislikeCount,
+        ];
     }
 }
