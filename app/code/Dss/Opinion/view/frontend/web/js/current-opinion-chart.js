@@ -16,7 +16,9 @@ define([
                 chart = chartUtils.renderChart(
                     'page-opinion-chart',
                     [config.chartData.currentLikes, config.chartData.currentDislikes],
-                    currentType
+                    currentType,
+                    ['Liked', 'Disliked'],
+                    config.chartData.colors
                 );
             }
         }

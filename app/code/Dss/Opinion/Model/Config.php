@@ -35,7 +35,9 @@ class Config
     public const CUSTOMER_ATTRIBUTE_CODE = 'can_give_opinion';
     public const XML_PATH_SHOW_OPINION_STATS_CHART = 'opinion/opinion_page/show_opinion_stats_chart';
     public const XML_PATH_SHOW_OPINION_CHART = 'opinion/opinion_page/show_opinion_chart';
+    public const XML_PATH_OPINION_CHART_COLORS = 'opinion/opinion_page/total_chart_colors';
     public const XML_PATH_SHOW_CURRENT_OPINION_CHART = 'opinion/opinion_page/show_current_opinion_chart';
+    public const XML_PATH_CURRENT_OPINION_CHART_COLORS = 'opinion/opinion_page/current_chart_colors';
     public const XML_PATH_SHOW_CHART_TOTAL = 'opinion/opinion_page/show_chart_total';
     public const XML_PATH_SHOW_CHART_PERCENTAGE = 'opinion/opinion_page/show_chart_percentage';
 
@@ -205,6 +207,35 @@ class Config
     }
 
     /**
+     * Get opinion chart colors from configuration
+     *
+     * @return array
+     */
+    public function getOpinionChartColors(): array
+    {
+        $defaultColors = ['#4caf50', '#f44336'];
+
+        $configValue = $this->scopeConfig->getValue(
+            self::XML_PATH_OPINION_CHART_COLORS,
+            ScopeInterface::SCOPE_STORE
+        );
+
+        if (!is_string($configValue)) {
+            return $defaultColors;
+        }
+
+        $colors = array_filter(
+            array_map(
+                fn($color) => '#' . ltrim(trim($color), '#'),
+                explode(',', $configValue)
+            ),
+            fn($color) => $color !== '#'
+        );
+
+        return count($colors) < 2 ? $defaultColors : $colors;
+    }
+
+    /**
      * Check if current opinion chart should be shown
      *
      * @return bool
@@ -215,6 +246,35 @@ class Config
             self::XML_PATH_SHOW_CURRENT_OPINION_CHART,
             ScopeInterface::SCOPE_STORE
         );
+    }
+
+    /**
+     * Get current opinion chart colors from configuration
+     *
+     * @return array
+     */
+    public function getCurrentOpinionColors(): array
+    {
+        $defaultColors = ['#2196F3', '#FFEB3B'];
+
+        $configValue = $this->scopeConfig->getValue(
+            self::XML_PATH_CURRENT_OPINION_CHART_COLORS,
+            ScopeInterface::SCOPE_STORE
+        );
+
+        if (!is_string($configValue)) {
+            return $defaultColors;
+        }
+
+        $colors = array_filter(
+            array_map(
+                fn($color) => '#' . ltrim(trim($color), '#'),
+                explode(',', $configValue)
+            ),
+            fn($color) => $color !== '#'
+        );
+
+        return count($colors) < 2 ? $defaultColors : $colors;
     }
 
     /**

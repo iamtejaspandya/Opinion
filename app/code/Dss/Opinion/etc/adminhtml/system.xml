@@ -152,8 +152,25 @@
                     </depends>
                 </field>
 
-                <field id="show_current_opinion_chart" translate="label" type="select"
+                <field id="total_chart_colors" translate="label" type="text"
                     sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Total Product Opinion Chart Colors</label>
+                    <frontend_model>Dss\Opinion\Block\Adminhtml\DualColorPicker</frontend_model>
+                    <validate>validate-color</validate>
+                    <comment><![CDATA[
+                        Choose a total data chart's color using the color picker.
+                        <br />
+                        Leave the colors empty to use the default colors.
+                        <br />
+                        <strong>Don't use '#' at the beginning of the color code.</strong>]]>
+                    </comment>
+                    <depends>
+                        <field id="show_opinion_chart">1</field>
+                    </depends>
+                </field>
+
+                <field id="show_current_opinion_chart" translate="label" type="select"
+                    sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show Current Page Product Opinion Chart</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[
@@ -168,8 +185,25 @@
                     </depends>
                 </field>
 
+                <field id="current_chart_colors" translate="label" type="text"
+                    sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Current Page Product Opinion Chart Colors</label>
+                    <frontend_model>Dss\Opinion\Block\Adminhtml\DualColorPicker</frontend_model>
+                    <validate>validate-color</validate>
+                    <comment><![CDATA[
+                        Choose a current page data chart's color using the color picker.
+                        <br />
+                        Leave the colors empty to use the default colors.
+                        <br />
+                        <strong>Don't use '#' at the beginning of the color code.</strong>]]>
+                    </comment>
+                    <depends>
+                        <field id="show_current_opinion_chart">1</field>
+                    </depends>
+                </field>
+
                 <field id="show_chart_total" translate="label" type="select"
-                    sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show Total Product Opinion Count</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[
@@ -183,7 +217,7 @@
                 </field>
 
                 <field id="show_chart_percentage" translate="label" type="select"
-                    sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show Product Opinion Percentage</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[
