@@ -236,4 +236,24 @@ class MyOpinions extends AbstractOpinion
             'current_page_total' => $currentPageLikeCount + $currentPageDislikeCount,
         ];
     }
+
+    /**
+     * Get opinion chart colors from configuration
+     *
+     * @return array
+     */
+    public function getOpinionChartColors(): array
+    {
+        return $this->config->getOpinionChartColors();
+    }
+
+    /**
+     * Get current opinion chart colors from configuration
+     *
+     * @return array
+     */
+    public function getCurrentOpinionColors(): array
+    {
+        return $this->config->getCurrentOpinionColors();
+    }
 }

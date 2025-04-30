@@ -17,6 +17,7 @@
 /** @var \Magento\Framework\View\Element\Template $block */
 $parentBlock = $block->getParentBlock();
 $opinionStats = $parentBlock ? $parentBlock->getOpinionStats() : [];
+$colors = $parentBlock ? $parentBlock->getOpinionChartColors() : [];
 ?>
 
 <?php if ($opinionStats['likes'] || $opinionStats['dislikes']): ?>
@@ -49,7 +50,8 @@ $opinionStats = $parentBlock ? $parentBlock->getOpinionStats() : [];
                             "component": "opinionChartComponent",
                             "chartData": {
                                 "likes": <?= (int)$opinionStats['likes'] ?>,
-                                "dislikes": <?= (int)$opinionStats['dislikes'] ?>
+                                "dislikes": <?= (int)$opinionStats['dislikes'] ?>,
+                                "colors": <?= /* @noEscape */ json_encode($colors) ?>
                             }
                         }
                     }
