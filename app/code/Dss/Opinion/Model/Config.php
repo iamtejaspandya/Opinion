@@ -224,15 +224,19 @@ class Config
             return $defaultColors;
         }
 
-        $colors = array_filter(
-            array_map(
-                fn($color) => '#' . ltrim(trim($color), '#'),
-                explode(',', $configValue)
-            ),
-            fn($color) => $color !== '#'
-        );
+        $inputColors = explode(',', $configValue);
+        $finalColors = [];
 
-        return count($colors) < 2 ? $defaultColors : $colors;
+        foreach ([0, 1] as $i) {
+            $color = $inputColors[$i] ?? null;
+            if ($color && trim($color) !== '') {
+                $finalColors[] = '#' . ltrim(trim($color), '#');
+            } else {
+                $finalColors[] = $defaultColors[$i];
+            }
+        }
+
+        return $finalColors;
     }
 
     /**
@@ -266,15 +270,19 @@ class Config
             return $defaultColors;
         }
 
-        $colors = array_filter(
-            array_map(
-                fn($color) => '#' . ltrim(trim($color), '#'),
-                explode(',', $configValue)
-            ),
-            fn($color) => $color !== '#'
-        );
+        $inputColors = explode(',', $configValue);
+        $finalColors = [];
 
-        return count($colors) < 2 ? $defaultColors : $colors;
+        foreach ([0, 1] as $i) {
+            $color = $inputColors[$i] ?? null;
+            if ($color && trim($color) !== '') {
+                $finalColors[] = '#' . ltrim(trim($color), '#');
+            } else {
+                $finalColors[] = $defaultColors[$i];
+            }
+        }
+
+        return $finalColors;
     }
 
     /**

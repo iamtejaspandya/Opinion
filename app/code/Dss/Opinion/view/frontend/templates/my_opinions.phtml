@@ -29,23 +29,23 @@ $opinionStats = $block->getOpinionStats();
             </div>
         <?php endif; ?>
     <?php endif; ?>
-    <?php if ($opinionStats): ?>
-        <?php if ($block->isOpinionStatsChartEnabled()): ?>
-            <?php if ($block->isOpinionChartEnabled() || $block->isCurrentOpinionChartEnabled()): ?>
-                <div class="opinion-stats" data-mage-init='{"Dss_Opinion/js/chart-type-selector":{}}'>
-                    <div class="charts-wrapper">
-                        <?php if ($block->isOpinionChartEnabled()): ?>
-                            <?= $block->getChildHtml('opinion_stats') ?>
-                        <?php endif; ?>
-                        <?php if ($block->isCurrentOpinionChartEnabled()): ?>
-                            <?= $block->getChildHtml('current_page_opinion_stats') ?>
-                        <?php endif; ?>
+    <?php if ($customerOpinions->getSize()): ?>
+        <?php if ($opinionStats): ?>
+            <?php if ($block->isOpinionStatsChartEnabled()): ?>
+                <?php if ($block->isOpinionChartEnabled() || $block->isCurrentOpinionChartEnabled()): ?>
+                    <div class="opinion-stats" data-mage-init='{"Dss_Opinion/js/chart-type-selector":{}}'>
+                        <div class="charts-wrapper">
+                            <?php if ($block->isOpinionChartEnabled()): ?>
+                                <?= $block->getChildHtml('opinion_stats') ?>
+                            <?php endif; ?>
+                            <?php if ($block->isCurrentOpinionChartEnabled()): ?>
+                                <?= $block->getChildHtml('current_page_opinion_stats') ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                </div>
+                <?php endif; ?>
             <?php endif; ?>
         <?php endif; ?>
-    <?php endif; ?>
-    <?php if ($customerOpinions->getSize()): ?>
         <div class="table-wrapper customer-opinions">
             <table class="data table table-opinion-items" id="my-opinions-table">
                 <caption class="table-caption"><?= $escaper->escapeHtml(__('My Product Opinions')) ?></caption>
