@@ -39,7 +39,6 @@
 
             <!-- My Opinion Page Config -->
             <opinion_page>
-                <show_opinion_stats_chart>1</show_opinion_stats_chart>
                 <show_opinion_chart>1</show_opinion_chart>
                 <show_current_opinion_chart>1</show_current_opinion_chart>
                 <show_chart_total>1</show_chart_total>

@@ -126,17 +126,6 @@
                 showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>My Opinion Page</label>
 
-                <field id="show_opinion_stats_chart" translate="label" type="select"
-                    sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Show Product Opinion Stats Chart</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[
-                        Enable this option to display opinion statistics charts on the My Opinion page.
-                        <br />
-                        Example: Setting this to "Yes" will show opinion charts such as likes and dislikes.]]>
-                    </comment>
-                </field>
-
                 <field id="show_opinion_chart" translate="label" type="select"
                     sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show Total Product Opinion Chart</label>
@@ -147,9 +136,6 @@
                         <br />
                         Example: If enabled, a total opinions chart will be shown.]]>
                     </comment>
-                    <depends>
-                        <field id="show_opinion_stats_chart">1</field>
-                    </depends>
                 </field>
 
                 <field id="total_chart_colors" translate="label" type="text"
@@ -180,9 +166,6 @@
                         Example: If enabled, a chart showing likes and dislikes for the currently showing products
                         will be displayed.]]>
                     </comment>
-                    <depends>
-                        <field id="show_opinion_stats_chart">1</field>
-                    </depends>
                 </field>
 
                 <field id="current_chart_colors" translate="label" type="text"
@@ -211,9 +194,6 @@
                         <br />
                         Example: If enabled, the opinion count will be visible below the both chart.]]>
                     </comment>
-                    <depends>
-                        <field id="show_opinion_stats_chart">1</field>
-                    </depends>
                 </field>
 
                 <field id="show_chart_percentage" translate="label" type="select"
@@ -225,9 +205,6 @@
                         <br />
                         Example: If enabled, the percentage of likes relative to total opinions will be shown.]]>
                     </comment>
-                    <depends>
-                        <field id="show_opinion_stats_chart">1</field>
-                    </depends>
                 </field>
             </group>
         </section>

@@ -6,7 +6,8 @@ var config = {
             'opinionSave': 'Dss_Opinion/js/api/save-opinion',
             'productOpinionLabel': 'Dss_Opinion/js/api/product-opinion-label',
             'opinionChartComponent': 'Dss_Opinion/js/opinion-chart',
-            'currentOpinionChartComponent': 'Dss_Opinion/js/current-opinion-chart'
+            'currentOpinionChartComponent': 'Dss_Opinion/js/current-opinion-chart',
+            'opinionActions': 'Dss_Opinion/js/actions'
         }
     },
 

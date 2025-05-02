@@ -59,41 +59,43 @@ class DualColorPicker extends BaseColorPicker
                 value="' . $value . '" />
         ';
 
-        $html .= '<script>
-            require([
-                "jquery",
-                "jquery/colorpicker/js/colorpicker",
-                "domReady!"
-            ], function ($) {
-                var color1 = $("#' . $inputId1 . '");
-                var color2 = $("#' . $inputId2 . '");
-                var hidden = $("#' . $element->getHtmlId() . '");
+        $html .= '
+            <script>
+                require([
+                    "jquery",
+                    "jquery/colorpicker/js/colorpicker",
+                    "domReady!"
+                ], function ($) {
+                    var color1 = $("#' . $inputId1 . '");
+                    var color2 = $("#' . $inputId2 . '");
+                    var hidden = $("#' . $element->getHtmlId() . '");
 
-                function updateHidden() {
-                    hidden.val(color1.val() + "," + color2.val());
-                }
+                    function updateHidden() {
+                        hidden.val(color1.val() + "," + color2.val());
+                    }
 
-                function initPicker(el) {
-                    el.ColorPicker({
-                        layout: "hex",
-                        onChange: function (hsb, hex, rgb) {
-                            el.css("background-color", "#" + hex);
-                            el.val(hex);
+                    function initPicker(el) {
+                        el.ColorPicker({
+                            layout: "hex",
+                            onChange: function (hsb, hex, rgb) {
+                                el.css("background-color", "#" + hex);
+                                el.val(hex);
+                                updateHidden();
+                            }
+                        }).keyup(function () {
+                            el.ColorPickerSetColor(el.val());
+                            el.css("background-color", "#" + el.val());
                             updateHidden();
-                        }
-                    }).keyup(function () {
-                        el.ColorPickerSetColor(el.val());
+                        });
+
                         el.css("background-color", "#" + el.val());
-                        updateHidden();
-                    });
+                    }
 
-                    el.css("background-color", "#" + el.val());
-                }
-
-                initPicker(color1);
-                initPicker(color2);
-            });
-        </script>';
+                    initPicker(color1);
+                    initPicker(color2);
+                });
+            </script>
+        ';
 
         return $html;
     }

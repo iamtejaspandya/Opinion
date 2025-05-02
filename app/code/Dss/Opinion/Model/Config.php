@@ -33,7 +33,6 @@ class Config
     public const XML_PATH_OPINION_LABEL_MIN_THRESHOLD = 'opinion/opinion_label/min_threshold';
     public const XML_PATH_OPINION_LABEL_MIN_LIKE = 'opinion/opinion_label/min_like';
     public const CUSTOMER_ATTRIBUTE_CODE = 'can_give_opinion';
-    public const XML_PATH_SHOW_OPINION_STATS_CHART = 'opinion/opinion_page/show_opinion_stats_chart';
     public const XML_PATH_SHOW_OPINION_CHART = 'opinion/opinion_page/show_opinion_chart';
     public const XML_PATH_OPINION_CHART_COLORS = 'opinion/opinion_page/total_chart_colors';
     public const XML_PATH_SHOW_CURRENT_OPINION_CHART = 'opinion/opinion_page/show_current_opinion_chart';
@@ -181,19 +180,6 @@ class Config
     }
 
     /**
-     * Check if opinion statistics chart should be shown on product page
-     *
-     * @return bool
-     */
-    public function isOpinionStatsChartEnabled(): bool
-    {
-        return $this->scopeConfig->isSetFlag(
-            self::XML_PATH_SHOW_OPINION_STATS_CHART,
-            ScopeInterface::SCOPE_STORE
-        );
-    }
-
-    /**
      * Check if opinion chart should be shown on product page
      *
      * @return bool
@@ -213,30 +199,10 @@ class Config
      */
     public function getOpinionChartColors(): array
     {
-        $defaultColors = ['#4caf50', '#f44336'];
-
-        $configValue = $this->scopeConfig->getValue(
+        return $this->getChartColorsFromConfig(
             self::XML_PATH_OPINION_CHART_COLORS,
-            ScopeInterface::SCOPE_STORE
+            ['#4caf50', '#f44336']
         );
-
-        if (!is_string($configValue)) {
-            return $defaultColors;
-        }
-
-        $inputColors = explode(',', $configValue);
-        $finalColors = [];
-
-        foreach ([0, 1] as $i) {
-            $color = $inputColors[$i] ?? null;
-            if ($color && trim($color) !== '') {
-                $finalColors[] = '#' . ltrim(trim($color), '#');
-            } else {
-                $finalColors[] = $defaultColors[$i];
-            }
-        }
-
-        return $finalColors;
     }
 
     /**
@@ -259,30 +225,10 @@ class Config
      */
     public function getCurrentOpinionColors(): array
     {
-        $defaultColors = ['#2196F3', '#FFEB3B'];
-
-        $configValue = $this->scopeConfig->getValue(
+        return $this->getChartColorsFromConfig(
             self::XML_PATH_CURRENT_OPINION_CHART_COLORS,
-            ScopeInterface::SCOPE_STORE
+            ['#2196F3', '#FFEB3B']
         );
-
-        if (!is_string($configValue)) {
-            return $defaultColors;
-        }
-
-        $inputColors = explode(',', $configValue);
-        $finalColors = [];
-
-        foreach ([0, 1] as $i) {
-            $color = $inputColors[$i] ?? null;
-            if ($color && trim($color) !== '') {
-                $finalColors[] = '#' . ltrim(trim($color), '#');
-            } else {
-                $finalColors[] = $defaultColors[$i];
-            }
-        }
-
-        return $finalColors;
     }
 
     /**
@@ -309,5 +255,40 @@ class Config
             self::XML_PATH_SHOW_CHART_PERCENTAGE,
             ScopeInterface::SCOPE_STORE
         );
+    }
+
+    /**
+     * Get chart colors from configuration
+     *
+     * @param string $configPath
+     * @param array $defaultColors
+     * @return array
+     */
+    public function getChartColorsFromConfig(
+        string $configPath,
+        array $defaultColors
+    ): array {
+        $configValue = $this->scopeConfig->getValue(
+            $configPath,
+            ScopeInterface::SCOPE_STORE
+        );
+
+        if (!is_string($configValue)) {
+            return $defaultColors;
+        }
+
+        $inputColors = explode(',', $configValue);
+        $finalColors = [];
+
+        foreach ([0, 1] as $i) {
+            $color = $inputColors[$i] ?? null;
+            if ($color && trim($color) !== '') {
+                $finalColors[] = '#' . ltrim(trim($color), '#');
+            } else {
+                $finalColors[] = $defaultColors[$i];
+            }
+        }
+
+        return $finalColors;
     }
 }

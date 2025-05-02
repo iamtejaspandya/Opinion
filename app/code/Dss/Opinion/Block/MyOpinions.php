@@ -135,16 +135,6 @@ class MyOpinions extends AbstractOpinion
     }
 
     /**
-     * Check if opinion statistics chart should be shown on product page
-     *
-     * @return bool
-     */
-    public function isOpinionStatsChartEnabled(): bool
-    {
-        return $this->config->isOpinionStatsChartEnabled();
-    }
-
-    /**
      * Check if opinion chart should be shown on product page
      *
      * @return bool
