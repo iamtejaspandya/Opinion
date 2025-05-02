@@ -46,6 +46,7 @@ $opinionStats = $block->getOpinionStats();
                 <?php endif; ?>
             <?php endif; ?>
         <?php endif; ?>
+        <div id="opinion-message" style="display: none;" class="message"></div>
         <div class="table-wrapper customer-opinions">
             <table class="data table table-opinion-items" id="my-opinions-table">
                 <caption class="table-caption"><?= $escaper->escapeHtml(__('My Product Opinions')) ?></caption>
@@ -59,6 +60,9 @@ $opinionStats = $block->getOpinionStats();
                         </th>
                         <th scope="col" class="col product-opinion">
                             <?= $escaper->escapeHtml(__('Product Opinion')) ?>
+                        </th>
+                        <th scope="col" class="col product-opinion-actions">
+                            <?= $escaper->escapeHtml(__('Actions')) ?>
                         </th>
                     </tr>
                 </thead>
@@ -91,7 +95,45 @@ $opinionStats = $block->getOpinionStats();
                                     class="col product-opinion <?= $escaper->escapeHtml(__($opinionClass)) ?>">
                                     <?= $escaper->escapeHtml($opinionText) ?>
                                 </td>
+                                <?php
+                                    $saveUrl = $escaper->escapeJs($block->getUrl('opinion/index/save'));
+                                    $formKey = $escaper->escapeJs($block->getFormKey());
+                                    $productId = $escaper->escapeJs($opinion->getProductId());
+                                    $productName = $escaper->escapeJs($product->getName());
+                                    $currentOpinion = $opinion->getOpinion();
+                                    $newOpinion = $currentOpinion == 1 ? 0 : 1;
+                                    $actionLabel = $newOpinion == 1 ? __('Change to Like') : __('Change to Dislike');
+                                    $newOpinionId = $newOpinion == 1 ? 'like-button' : 'dislike-button';
+                                    $buttonClass = $newOpinion == 1 ? 'primary' : 'secondary';
+                                    $newOpinionClass = $newOpinion == 1 ? 'liked' : 'disliked';
+                                ?>
+                                <td data-th="<?= $escaper->escapeHtml(__('Actions')) ?>"
+                                    class="col product-opinion-actions <?= $escaper->escapeHtml(__($opinionClass)) ?>"
+                                    id="opinion-actions-<?= $escaper->escapeHtml(__($productId)) ?>">
+                                    <button type="button"
+                                            class="action <?= $escaper->escapeHtml(__($buttonClass)) ?>
+                                                change-opinion <?= $escaper->escapeHtml(__($opinionClass)) ?>"
+                                            id="<?= $escaper->escapeHtml(__($newOpinionId)) ?>"
+                                            data-opinion="<?= $escaper->escapeHtml(__($newOpinion)) ?>">
+                                        <?= $escaper->escapeHtml($actionLabel) ?>
+                                    </button>
+                                </td>
                             </tr>
+
+                            <script type="text/x-magento-init">
+                                {
+                                    "#opinion-actions-<?= /* @noEscape */ $productId ?>": {
+                                        "opinionActions": {
+                                            "elementId": "opinion-actions-<?= /* @noEscape */ $productId ?>",
+                                            "saveUrl": "<?= /* @noEscape */ $saveUrl ?>",
+                                            "formKey": "<?= /* @noEscape */ $formKey ?>",
+                                            "productId": "<?= /* @noEscape */ $productId ?>",
+                                            "productName": "<?= /* @noEscape */ $productName ?>",
+                                            "errorMessage": "<?= $escaper->escapeJs(__('Something went wrong.')) ?>"
+                                        }
+                                    }
+                                }
+                            </script>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </tbody>

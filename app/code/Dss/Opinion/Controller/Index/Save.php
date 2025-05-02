@@ -143,12 +143,29 @@ class Save implements HttpPostActionInterface
 
                         $this->updateProductOpinionCounts($productId, $productName);
 
+                        if ($this->config->isOpinionChartEnabled() || $this->config->isCurrentOpinionChartEnabled()) {
+                            $this->messageManager->addSuccessMessage(
+                                __(
+                                    'Your opinion has been updated successfully,
+                                    please refresh the page to see updated charts.'
+                                )
+                            );
+                        } else {
+                            $this->messageManager->addSuccessMessage(
+                                __('Your opinion has been updated successfully.')
+                            );
+                        }
+
                         return $resultJson->setData([
                             'success' => true,
                             'message' => __('Your opinion has been updated successfully.'),
                             'opinion' => (int)$data['opinion']
                         ]);
                     }
+
+                    $this->messageManager->addSuccessMessage(
+                        __('Your opinion is already submitted.')
+                    );
 
                     return $resultJson->setData([
                         'success' => true,
