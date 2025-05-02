@@ -33,7 +33,6 @@ class Config
     public const XML_PATH_OPINION_LABEL_MIN_THRESHOLD = 'opinion/opinion_label/min_threshold';
     public const XML_PATH_OPINION_LABEL_MIN_LIKE = 'opinion/opinion_label/min_like';
     public const CUSTOMER_ATTRIBUTE_CODE = 'can_give_opinion';
-    public const XML_PATH_SHOW_OPINION_STATS_CHART = 'opinion/opinion_page/show_opinion_stats_chart';
     public const XML_PATH_SHOW_OPINION_CHART = 'opinion/opinion_page/show_opinion_chart';
     public const XML_PATH_OPINION_CHART_COLORS = 'opinion/opinion_page/total_chart_colors';
     public const XML_PATH_SHOW_CURRENT_OPINION_CHART = 'opinion/opinion_page/show_current_opinion_chart';
@@ -178,19 +177,6 @@ class Config
         } catch (\Exception $e) {
             return false;
         }
-    }
-
-    /**
-     * Check if opinion statistics chart should be shown on product page
-     *
-     * @return bool
-     */
-    public function isOpinionStatsChartEnabled(): bool
-    {
-        return $this->scopeConfig->isSetFlag(
-            self::XML_PATH_SHOW_OPINION_STATS_CHART,
-            ScopeInterface::SCOPE_STORE
-        );
     }
 
     /**
