@@ -67,16 +67,6 @@ class OpinionButton extends AbstractOpinion
     }
 
     /**
-     * Check if opinion submission is allowed.
-     *
-     * @return bool
-     */
-    public function isOpinionSubmissionAllowed(): bool
-    {
-        return $this->config->isOpinionSubmissionAllowed();
-    }
-
-    /**
      * Get the configured message to show when opinion submission is disabled
      *
      * @return string

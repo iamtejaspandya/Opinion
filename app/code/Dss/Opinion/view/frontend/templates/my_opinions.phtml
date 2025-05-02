@@ -58,9 +58,11 @@ $opinionStats = $block->getOpinionStats();
                         <th scope="col" class="col product-opinion">
                             <?= $escaper->escapeHtml(__('Product Opinion')) ?>
                         </th>
-                        <th scope="col" class="col product-opinion-actions">
-                            <?= $escaper->escapeHtml(__('Actions')) ?>
-                        </th>
+                        <?php if ($block->canCustomerGiveOpinion() && $block->isOpinionSubmissionAllowed()): ?>
+                            <th scope="col" class="col product-opinion-actions">
+                                <?= $escaper->escapeHtml(__('Actions')) ?>
+                            </th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody id="opinions-list">
@@ -104,33 +106,38 @@ $opinionStats = $block->getOpinionStats();
                                     $buttonClass = $newOpinion == 1 ? 'primary' : 'secondary';
                                     $newOpinionClass = $newOpinion == 1 ? 'liked' : 'disliked';
                                 ?>
-                                <td data-th="<?= $escaper->escapeHtml(__('Actions')) ?>"
-                                    class="col product-opinion-actions <?= $escaper->escapeHtml(__($opinionClass)) ?>"
-                                    id="opinion-actions-<?= $escaper->escapeHtml(__($productId)) ?>">
-                                    <button type="button"
-                                            class="action <?= $escaper->escapeHtml(__($buttonClass)) ?>
-                                                change-opinion <?= $escaper->escapeHtml(__($opinionClass)) ?>"
-                                            id="<?= $escaper->escapeHtml(__($newOpinionId)) ?>"
-                                            data-opinion="<?= $escaper->escapeHtml(__($newOpinion)) ?>">
-                                        <?= $escaper->escapeHtml($actionLabel) ?>
-                                    </button>
-                                </td>
+                                <?php if ($block->canCustomerGiveOpinion() && $block->isOpinionSubmissionAllowed()): ?>
+                                    <td data-th="<?= $escaper->escapeHtml(__('Actions')) ?>"
+                                        class="col product-opinion-actions
+                                            <?= $escaper->escapeHtml(__($opinionClass)) ?>"
+                                        id="opinion-actions-<?= $escaper->escapeHtml(__($productId)) ?>">
+                                        <button type="button"
+                                                class="action <?= $escaper->escapeHtml(__($buttonClass)) ?>
+                                                    change-opinion <?= $escaper->escapeHtml(__($opinionClass)) ?>"
+                                                id="<?= $escaper->escapeHtml(__($newOpinionId)) ?>"
+                                                data-opinion="<?= $escaper->escapeHtml(__($newOpinion)) ?>">
+                                            <?= $escaper->escapeHtml($actionLabel) ?>
+                                        </button>
+                                    </td>
+                                <?php endif; ?>
                             </tr>
 
-                            <script type="text/x-magento-init">
-                                {
-                                    "#opinion-actions-<?= /* @noEscape */ $productId ?>": {
-                                        "opinionActions": {
-                                            "elementId": "opinion-actions-<?= /* @noEscape */ $productId ?>",
-                                            "saveUrl": "<?= /* @noEscape */ $saveUrl ?>",
-                                            "formKey": "<?= /* @noEscape */ $formKey ?>",
-                                            "productId": "<?= /* @noEscape */ $productId ?>",
-                                            "productName": "<?= /* @noEscape */ $productName ?>",
-                                            "errorMessage": "<?= $escaper->escapeJs(__('Something went wrong.')) ?>"
+                            <?php if ($block->canCustomerGiveOpinion() && $block->isOpinionSubmissionAllowed()): ?>
+                                <script type="text/x-magento-init">
+                                    {
+                                        "#opinion-actions-<?= /* @noEscape */ $productId ?>": {
+                                            "opinionActions": {
+                                                "elementId": "opinion-actions-<?= /* @noEscape */ $productId ?>",
+                                                "saveUrl": "<?= /* @noEscape */ $saveUrl ?>",
+                                                "formKey": "<?= /* @noEscape */ $formKey ?>",
+                                                "productId": "<?= /* @noEscape */ $productId ?>",
+                                                "productName": "<?= /* @noEscape */ $productName ?>",
+                                                "errorMessage": "<?= $escaper->escapeJs(__('Something went wrong.')) ?>"
+                                            }
                                         }
                                     }
-                                }
-                            </script>
+                                </script>
+                            <?php endif; ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </tbody>

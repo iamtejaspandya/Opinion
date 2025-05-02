@@ -63,4 +63,14 @@ abstract class AbstractOpinion extends Template
     {
         return $this->config->getDisallowedCustomerMessage();
     }
+
+    /**
+     * Check if opinion submission is allowed.
+     *
+     * @return bool
+     */
+    public function isOpinionSubmissionAllowed(): bool
+    {
+        return $this->config->isOpinionSubmissionAllowed();
+    }
 }
