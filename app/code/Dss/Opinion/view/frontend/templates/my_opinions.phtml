@@ -24,7 +24,15 @@ $opinionStats = $block->getOpinionStats();
         <?php if ($block->getDisallowedCustomerMessage()): ?>
             <div class="message error empty disallowed-customer">
                 <div>
-                    <?= /* @noEscape */ __($block->getDisallowedCustomerMessage()) ?>
+                    <?= $escaper->escapeHtml(__($block->getDisallowedCustomerMessage())) ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    <?php else: ?>
+        <?php if (!$block->isOpinionSubmissionAllowed() && $block->getOpinionDisabledMessage()): ?>
+            <div class="message info empty disable-message">
+                <div>
+                    <?= $escaper->escapeHtml(__($block->getOpinionDisabledMessage())) ?>
                 </div>
             </div>
         <?php endif; ?>
@@ -95,10 +103,12 @@ $opinionStats = $block->getOpinionStats();
                                     <?= $escaper->escapeHtml($opinionText) ?>
                                 </td>
                                 <?php
-                                    $saveUrl = $escaper->escapeJs($block->getUrl('opinion/index/save'));
-                                    $formKey = $escaper->escapeJs($block->getFormKey());
-                                    $productId = $escaper->escapeJs($opinion->getProductId());
-                                    $productName = $escaper->escapeJs($product->getName());
+                                    $saveUrl = $block->getUrl('opinion/index/save');
+                                    $deleteUrl = $block->getUrl('opinion/index/delete');
+                                    $opinionId = $opinion->getCustomerOpinionId();
+                                    $formKey = $block->getFormKey();
+                                    $productId = $opinion->getProductId();
+                                    $productName = $product->getName();
                                     $currentOpinion = $opinion->getOpinion();
                                     $newOpinion = $currentOpinion == 1 ? 0 : 1;
                                     $actionLabel = $newOpinion == 1 ? __('Change to Like') : __('Change to Dislike');
@@ -110,14 +120,22 @@ $opinionStats = $block->getOpinionStats();
                                     <td data-th="<?= $escaper->escapeHtml(__('Actions')) ?>"
                                         class="col product-opinion-actions
                                             <?= $escaper->escapeHtml(__($opinionClass)) ?>"
-                                        id="opinion-actions-<?= $escaper->escapeHtml(__($productId)) ?>">
-                                        <button type="button"
-                                                class="action <?= $escaper->escapeHtml(__($buttonClass)) ?>
-                                                    change-opinion <?= $escaper->escapeHtml(__($opinionClass)) ?>"
-                                                id="<?= $escaper->escapeHtml(__($newOpinionId)) ?>"
-                                                data-opinion="<?= $escaper->escapeHtml(__($newOpinion)) ?>">
-                                            <?= $escaper->escapeHtml($actionLabel) ?>
-                                        </button>
+                                        id="opinion-actions-<?= $escaper->escapeHtml(__($opinionId)) ?>">
+                                        <div class="actions-btns">
+                                            <button type="button"
+                                                    class="action <?= $escaper->escapeHtml(__($buttonClass)) ?>
+                                                        change-opinion <?= $escaper->escapeHtml(__($opinionClass)) ?>"
+                                                    id="<?= $escaper->escapeHtml(__($newOpinionId)) ?>"
+                                                    data-opinion="<?= $escaper->escapeHtml(__($newOpinion)) ?>">
+                                                <?= $escaper->escapeHtml(__($actionLabel)) ?>
+                                            </button>
+                                            <button type="button"
+                                                    class="action delete-opinion"
+                                                    id="delete-<?= $escaper->escapeHtml(__($opinionId)) ?>"
+                                                    data-opinion-id="<?= $escaper->escapeHtml($opinionId) ?>">
+                                                <?= $escaper->escapeHtml(__('Delete')) ?>
+                                            </button>
+                                        </div>
                                     </td>
                                 <?php endif; ?>
                             </tr>
@@ -125,13 +143,15 @@ $opinionStats = $block->getOpinionStats();
                             <?php if ($block->canCustomerGiveOpinion() && $block->isOpinionSubmissionAllowed()): ?>
                                 <script type="text/x-magento-init">
                                     {
-                                        "#opinion-actions-<?= /* @noEscape */ $productId ?>": {
+                                        "#opinion-actions-<?= $escaper->escapeJs($opinionId) ?>": {
                                             "opinionActions": {
-                                                "elementId": "opinion-actions-<?= /* @noEscape */ $productId ?>",
-                                                "saveUrl": "<?= /* @noEscape */ $saveUrl ?>",
-                                                "formKey": "<?= /* @noEscape */ $formKey ?>",
-                                                "productId": "<?= /* @noEscape */ $productId ?>",
-                                                "productName": "<?= /* @noEscape */ $productName ?>",
+                                                "elementId": "opinion-actions-<?= $escaper->escapeJs($opinionId) ?>",
+                                                "saveUrl": "<?= $escaper->escapeJs($saveUrl) ?>",
+                                                "deleteUrl": "<?= $escaper->escapeJs($deleteUrl) ?>",
+                                                "opinionId": "<?= $escaper->escapeJs($opinionId) ?>",
+                                                "formKey": "<?= $escaper->escapeJs($formKey) ?>",
+                                                "productId": "<?= $escaper->escapeJs($productId) ?>",
+                                                "productName": "<?= $escaper->escapeJs($productName) ?>",
                                                 "errorMessage": "<?= $escaper->escapeJs(__('Something went wrong.')) ?>"
                                             }
                                         }

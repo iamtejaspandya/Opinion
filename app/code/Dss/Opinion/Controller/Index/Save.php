@@ -22,7 +22,7 @@ use Dss\Opinion\Model\Config;
 use Dss\Opinion\Model\CustomerOpinionFactory;
 use Dss\Opinion\Model\OpinionFactory;
 use Dss\Opinion\Model\ResourceModel\CustomerOpinion as CustomerOpinionResource;
-use Dss\Opinion\Model\ResourceModel\Opinion as ProductOpinionResource;
+use Dss\Opinion\Model\Service\ProductOpinionUpdater;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\HttpPostActionInterface;
@@ -39,31 +39,31 @@ class Save implements HttpPostActionInterface
      * Constructor.
      *
      * @param Config $config
+     * @param ProductOpinionUpdater $productOpinionUpdater
+     * @param ProductRepositoryInterface $productRepository
      * @param CustomerSession $customerSession
      * @param CustomerOpinionFactory $customerProductOpinionFactory
      * @param OpinionFactory $productOpinionFactory
      * @param CustomerOpinionResource $customerOpinionResource
-     * @param ProductOpinionResource $productOpinionResource
      * @param JsonFactory $jsonFactory
      * @param UrlInterface $url
      * @param RequestInterface $request
      * @param ManagerInterface $messageManager
      * @param LoggerInterface $logger
-     * @param ProductRepositoryInterface $productRepository
      */
     public function __construct(
         protected Config $config,
+        protected ProductOpinionUpdater $productOpinionUpdater,
+        protected ProductRepositoryInterface $productRepository,
         protected CustomerSession $customerSession,
         protected CustomerOpinionFactory $customerProductOpinionFactory,
         protected OpinionFactory $productOpinionFactory,
         protected CustomerOpinionResource $customerOpinionResource,
-        protected ProductOpinionResource $productOpinionResource,
         protected JsonFactory $jsonFactory,
         protected UrlInterface $url,
         protected RequestInterface $request,
         protected ManagerInterface $messageManager,
-        protected LoggerInterface $logger,
-        protected ProductRepositoryInterface $productRepository
+        protected LoggerInterface $logger
     ) {
     }
 
@@ -76,15 +76,13 @@ class Save implements HttpPostActionInterface
     {
         $resultJson = $this->jsonFactory->create();
         $data = $this->request->getPostValue();
-        $productId = (int)$data['product_id'];
-        $productUrl = $this->getProductUrl($productId);
+        $productId = (int)($data['product_id'] ?? 0);
 
         if (!$this->customerSession->isLoggedIn()) {
             $this->messageManager->addErrorMessage(
                 __('Looks like you\'re logged out. Please sign in to share your thoughts!')
             );
-
-            return $this->jsonFactory->create()->setData([
+            return $resultJson->setData([
                 'success' => false,
                 'redirect' => true,
                 'redirect_url' => $this->url->getUrl('customer/account/login')
@@ -95,11 +93,10 @@ class Save implements HttpPostActionInterface
             $this->messageManager->addErrorMessage(
                 __('The product opinion feature is currently disabled.')
             );
-
-            return $this->jsonFactory->create()->setData([
+            return $resultJson->setData([
                 'success' => false,
                 'redirect' => true,
-                'redirect_url' => $this->url->getUrl($productUrl)
+                'redirect_url' => $this->getRedirectUrl($productId)
             ]);
         }
 
@@ -107,11 +104,10 @@ class Save implements HttpPostActionInterface
             $this->messageManager->addErrorMessage(
                 __('We appreciate your opinion! However, submissions are currently turned off.')
             );
-
-            return $this->jsonFactory->create()->setData([
+            return $resultJson->setData([
                 'success' => false,
                 'redirect' => true,
-                'redirect_url' => $this->url->getUrl($productUrl)
+                'redirect_url' => $this->getRedirectUrl($productId)
             ]);
         }
 
@@ -119,154 +115,109 @@ class Save implements HttpPostActionInterface
             $this->messageManager->addErrorMessage(
                 __('Your account is currently restricted from submitting opinions.')
             );
-
-            return $this->jsonFactory->create()->setData([
+            return $resultJson->setData([
                 'success' => false,
                 'redirect' => true,
-                'redirect_url' => $this->url->getUrl($productUrl)
+                'redirect_url' => $this->getRedirectUrl($productId)
             ]);
         }
 
-        if (!empty($data['product_id']) && isset($data['opinion'])) {
-            try {
-                $customerId = (int)$this->customerSession->getCustomerId();
-                $productId = (int)$data['product_id'];
-                $productName = $data['product_name'] ?? '';
+        if (empty($data['product_id']) || !isset($data['opinion'])) {
+            return $resultJson->setData([
+                'success' => false,
+                'message' => __('Invalid data provided.')
+            ]);
+        }
 
-                $opinion = $this->customerProductOpinionFactory->create();
-                $this->customerOpinionResource->loadByCustomerAndProduct($opinion, $customerId, $productId);
+        try {
+            $customerId = (int)$this->customerSession->getCustomerId();
+            $productName = $data['product_name'] ?? '';
+            $newOpinion = (int)$data['opinion'];
 
-                if ($opinion->getId()) {
-                    if ($opinion->getOpinion() !== (int)$data['opinion']) {
-                        $opinion->setOpinion((int)$data['opinion']);
-                        $this->customerOpinionResource->save($opinion);
+            $opinion = $this->customerProductOpinionFactory->create();
+            $this->customerOpinionResource->loadByCustomerAndProduct(
+                $opinion,
+                $customerId,
+                $productId
+            );
 
-                        $this->updateProductOpinionCounts($productId, $productName);
-
-                        if ($this->config->isOpinionChartEnabled() || $this->config->isCurrentOpinionChartEnabled()) {
-                            $this->messageManager->addSuccessMessage(
-                                __(
-                                    'Your opinion has been updated successfully,
-                                    please refresh the page to see updated charts.'
-                                )
-                            );
-                        } else {
-                            $this->messageManager->addSuccessMessage(
-                                __('Your opinion has been updated successfully.')
-                            );
-                        }
-
-                        return $resultJson->setData([
-                            'success' => true,
-                            'message' => __('Your opinion has been updated successfully.'),
-                            'opinion' => (int)$data['opinion']
-                        ]);
-                    }
-
+            if ($opinion->getId()) {
+                if ($opinion->getOpinion() === $newOpinion) {
                     $this->messageManager->addSuccessMessage(
                         __('Your opinion is already submitted.')
                     );
-
                     return $resultJson->setData([
                         'success' => true,
                         'message' => __('Your opinion is already submitted.')
                     ]);
                 }
 
-                $opinion->setData([
-                    'customer_id' => $customerId,
-                    'product_id' => $productId,
-                    'product_name' => $productName,
-                    'opinion' => (int)$data['opinion']
-                ]);
+                $opinion->setOpinion($newOpinion);
                 $this->customerOpinionResource->save($opinion);
+                $this->productOpinionUpdater->update($productId, $productName);
 
-                $this->updateProductOpinionCounts($productId, $productName);
+                $referer = $this->request->getServer('HTTP_REFERER') ?? '';
+
+                if (str_contains($referer, 'opinion/index/myopinions')) {
+                    if ($this->config->isOpinionChartEnabled() || $this->config->isCurrentOpinionChartEnabled()) {
+                        $this->messageManager->addSuccessMessage(__(
+                            'Your opinion has been updated successfully. ' .
+                            'Please refresh the page to see updated charts.'
+                        ));
+                    } else {
+                        $this->messageManager->addSuccessMessage(
+                            __('Your opinion has been updated successfully.')
+                        );
+                    }
+                }
 
                 return $resultJson->setData([
                     'success' => true,
-                    'message' => __('Your opinion has been submitted successfully.'),
-                    'opinion' => (int)$data['opinion']
-                ]);
-            } catch (\Exception $e) {
-                $this->logger->error($e->getMessage());
-                return $resultJson->setData([
-                    'success' => false,
-                    'message' => __('Something went wrong while saving your opinion.')
+                    'message' => __('Your opinion has been updated successfully.'),
+                    'opinion' => $newOpinion
                 ]);
             }
-        }
 
-        return $resultJson->setData([
-            'success' => false,
-            'message' => __('Invalid data provided.')
-        ]);
-    }
+            $opinion->setData([
+                'customer_id' => $customerId,
+                'product_id' => $productId,
+                'product_name' => $productName,
+                'opinion' => $newOpinion
+            ]);
 
-    /**
-     * Update total like and dislike counts for the product.
-     *
-     * @param int $productId
-     * @param string $productName
-     * @return void
-     */
-    public function updateProductOpinionCounts(int $productId, string $productName): void
-    {
-        try {
-            $connection = $this->customerOpinionResource->getConnection();
-            $tableName = $this->customerOpinionResource->getMainTable();
+            $this->customerOpinionResource->save($opinion);
+            $this->productOpinionUpdater->update($productId, $productName);
 
-            $select = $connection->select()
-                ->from($tableName, [
-                    'total_likes' => 'SUM(opinion = 1)',
-                    'total_dislikes' => 'SUM(opinion = 0)'
-                ])
-                ->where('product_id = ?', $productId);
-
-            $result = $connection->fetchRow($select);
-
-            $totalLikes = (int)($result['total_likes'] ?? 0);
-            $totalDislikes = (int)($result['total_dislikes'] ?? 0);
-
-            $productOpinion = $this->productOpinionFactory->create();
-            $this->productOpinionResource->load($productOpinion, $productId, 'product_id');
-
-            if (!$productOpinion->getId()) {
-                $productOpinion->setData([
-                    'product_id' => $productId,
-                    'product_name' => $productName,
-                    'total_like_opinion_count' => $totalLikes,
-                    'total_dislike_opinion_count' => $totalDislikes
-                ]);
-            } else {
-                $productOpinion->setTotalLikeOpinionCount($totalLikes);
-                $productOpinion->setTotalDislikeOpinionCount($totalDislikes);
-            }
-
-            $this->productOpinionResource->save($productOpinion);
+            return $resultJson->setData([
+                'success' => true,
+                'message' => __('Your opinion has been submitted successfully.'),
+                'opinion' => $newOpinion
+            ]);
         } catch (\Exception $e) {
-            $this->logger->error('Error updating product opinion counts: ' . $e->getMessage());
+            $this->logger->error($e->getMessage());
+
+            return $resultJson->setData([
+                'success' => false,
+                'message' => __('Something went wrong while saving your opinion.')
+            ]);
         }
     }
 
     /**
-     * Get product URL by productId
+     * Get product URL or fallback to My Opinions page if accessed from there.
      *
      * @param int $productId
      * @return string
      */
-    public function getProductUrl(int $productId): string
+    private function getRedirectUrl(int $productId): string
     {
-        try {
-            if ($productId) {
-                $product = $this->productRepository->getById($productId);
+        $referer = $this->request->getServer('HTTP_REFERER') ?? '';
+        $myOpinionsUrl = $this->url->getUrl('opinion/index/myopinions');
 
-                return $product->getProductUrl();
-            }
-        } catch (\Exception $e) {
-            $this->logger->error('Error getting product URL: ' . $e->getMessage());
+        if (str_contains($referer, 'opinion/index/myopinions')) {
+            return $myOpinionsUrl;
         }
 
-        return $this->url->getBaseUrl();
+        return $this->productRepository->getById($productId)->getProductUrl();
     }
 }

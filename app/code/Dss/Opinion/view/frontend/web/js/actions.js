@@ -1,12 +1,13 @@
 define([
     'jquery',
-    'opinionSave'
-], function ($, saveOpinion) {
+    'opinionSave',
+    'opinionDelete'
+], function ($, saveOpinion, deleteOpinion) {
     'use strict';
 
     return function (config) {
         $(document).ready(function () {
-            $(document).off('click', `#${config.elementId} button`).on('click', `#${config.elementId} button`, function () {
+            $(document).off('click', `#${config.elementId} .change-opinion`).on('click', `#${config.elementId} .change-opinion`, function () {
                 const $button = $(this);
                 const $row = $button.closest('tr');
                 const opinionValue = $button.data('opinion');
@@ -25,13 +26,30 @@ define([
                         $row.find('.product-opinion').text(newOpinionText);
 
                         $button.text(newButtonText)
-                               .removeClass('primary secondary')
-                               .addClass(newButtonClass, newClass)
+                               .removeClass('primary secondary liked disliked')
+                               .addClass(newButtonClass)
+                               .addClass(newClass)
                                .data('opinion', newOpinionValue);
 
                         $row.find('.product-image, .product-name, .product-opinion, .product-opinion-actions')
                             .removeClass(oldClass)
                             .addClass(newClass);
+                    }
+                });
+            });
+
+            $(document).off('click', `#${config.elementId} .delete-opinion`).on('click', `#${config.elementId} .delete-opinion`, function () {
+                const $button = $(this);
+                const $row = $button.closest('tr');
+
+                deleteOpinion({
+                    ...config,
+                    opinionId: $button.data('opinion-id')
+                }, function (response) {
+                    if (response.redirect && response.redirect_url) {
+                        window.location.href = response.redirect_url;
+                    } else {
+                        alert(response.message || config.errorMessage);
                     }
                 });
             });

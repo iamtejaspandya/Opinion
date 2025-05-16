@@ -19,6 +19,8 @@
     <update handle="customer_account"/>
     <head>
         <title>My Opinions</title>
+        <meta name="description"
+            content="View and manage all your product opinions, including likes and dislikes, in one place." />
     </head>
     <body>
         <referenceBlock name="page.main.title">
