@@ -19,7 +19,7 @@ $product = $block->getLayout()->getBlock('product.info')->getProduct();
 $productId = $product ? $product->getId() : 0;
 ?>
 
-<?php if ($block->isOpinionLabelEnabled()): ?>
+<?php if ($block->isOpinionLabelEnabled() && $block->isProductOpinionEnabled()): ?>
     <div class="product-opinion-label" id="product-opinion-label" style="display: none;"></div>
 
     <script type="text/x-magento-init">

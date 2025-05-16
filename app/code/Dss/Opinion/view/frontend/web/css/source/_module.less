@@ -76,7 +76,7 @@
 
                 .like-button {
                     background: @opinion-primary-color;
-                    color: @opinion-color-white;
+                    color: @opinion-white-color;
 
                     &:hover {
                         background: darken(@opinion-primary-color, 10%);
@@ -85,7 +85,7 @@
 
                 .dislike-button {
                     background: @opinion-secondary-color;
-                    color: @opinion-color-white;
+                    color: @opinion-white-color;
 
                     &:hover {
                         background: darken(@opinion-secondary-color, 10%);
@@ -143,6 +143,58 @@
             border: 1px solid @opinion-alert-error-border;
             color: @opinion-alert-error-text;
         }
+
+        .actions-btns {
+            button {
+                align-items: center;
+                background: none;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                height: 38px;
+                padding: 10px 15px;
+                transition: background .4s ease-in-out, transform .3s ease-in-out;
+
+                &:hover {
+                    border: none;
+                    opacity: .85;
+                }
+
+                &:active {
+                    transform: scale(.95);
+                }
+            }
+
+            .liked {
+                background: @opinion-secondary-color;
+                color: @opinion-white-color;
+
+                &:hover {
+                    background: darken(@opinion-secondary-color, 10%);
+                }
+            }
+
+            .disliked {
+                background: @opinion-primary-color;
+                color: @opinion-white-color;
+
+                &:hover {
+                    background: darken(@opinion-primary-color, 10%);
+                }
+            }
+
+            .delete-opinion {
+                background: @opinion-remove-color;
+                color: @opinion-white-color;
+                margin-left: 8px;
+
+                &:hover {
+                    background: darken(@opinion-remove-color, 10%);
+                }
+            }
+        }
     }
 }
 
@@ -183,6 +235,26 @@
     }
 }
 
+@media only screen and (max-width: 1132px) {
+    .customer-opinions {
+        .product-opinion-actions {
+            .actions-btns {
+                display: grid;
+                gap: 7px;
+
+                button {
+                    height: auto;
+                    padding: 7px 10px;
+                }
+
+                .delete-opinion {
+                    margin: 0;
+                }
+            }
+        }
+    }
+}
+
 @media only screen and (max-width: 768px) {
     .opinion-stats {
         .opinion-chart {
@@ -195,6 +267,23 @@
     .opinion-stats {
         .opinion-chart {
             width: 250px;
+        }
+    }
+
+    .customer-opinions {
+        .product-opinion-actions {
+            border: 1px solid @opinion-alert-error-border !important;
+
+            .actions-btns {
+                align-items: center;
+                display: grid;
+                justify-content: center;
+
+                button {
+                    max-width: 150px;
+                    padding: 7px 10px;
+                }
+            }
         }
     }
 }
@@ -210,7 +299,7 @@
 .product-opinion-label {
     animation: fadeInScale .4s ease-in-out forwards;
     border-radius: 5px;
-    color: @opinion-color-white;
+    color: @opinion-white-color;
     font-weight: bold;
     left: 10px;
     padding: 5px 10px;
@@ -221,7 +310,7 @@
 
     &.one-opinion {
         background: fade(@opinion-alert-one-opinion-bg, 80%);
-        color: @opinion-color-white;
+        color: @opinion-white-color;
     }
 
     &.liked {

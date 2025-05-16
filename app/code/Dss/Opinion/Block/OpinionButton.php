@@ -57,26 +57,6 @@ class OpinionButton extends AbstractOpinion
     }
 
     /**
-     * Check if product opinion is enabled.
-     *
-     * @return bool
-     */
-    public function isProductOpinionEnabled(): bool
-    {
-        return $this->config->isProductOpinionEnabled();
-    }
-
-    /**
-     * Get the configured message to show when opinion submission is disabled
-     *
-     * @return string
-     */
-    public function getOpinionDisabledMessage(): string
-    {
-        return $this->config->getOpinionDisabledMessage();
-    }
-
-    /**
      * Get Product ID from request.
      *
      * @return int|null

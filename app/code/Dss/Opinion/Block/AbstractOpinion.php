@@ -45,6 +45,26 @@ abstract class AbstractOpinion extends Template
     }
 
     /**
+     * Check if product opinion is enabled.
+     *
+     * @return bool
+     */
+    public function isProductOpinionEnabled(): bool
+    {
+        return $this->config->isProductOpinionEnabled();
+    }
+
+    /**
+     * Get the configured message to show when opinion submission is disabled
+     *
+     * @return string
+     */
+    public function getOpinionDisabledMessage(): string
+    {
+        return $this->config->getOpinionDisabledMessage();
+    }
+
+    /**
      * Check if customer can give opinion.
      *
      * @return bool

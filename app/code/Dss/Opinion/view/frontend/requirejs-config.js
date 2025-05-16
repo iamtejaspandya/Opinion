@@ -4,6 +4,7 @@ var config = {
             'opinionHandler': 'Dss_Opinion/js/opinion',
             'opinionStatus': 'Dss_Opinion/js/api/status-opinion',
             'opinionSave': 'Dss_Opinion/js/api/save-opinion',
+            'opinionDelete': 'Dss_Opinion/js/api/delete-opinion',
             'productOpinionLabel': 'Dss_Opinion/js/api/product-opinion-label',
             'opinionChartComponent': 'Dss_Opinion/js/opinion-chart',
             'currentOpinionChartComponent': 'Dss_Opinion/js/current-opinion-chart',
