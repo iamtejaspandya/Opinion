@@ -10,6 +10,7 @@
 
         .opinion-container {
             display: flex;
+            flex-direction: column;
             gap: 10px;
 
             .opinion-status {
@@ -272,7 +273,13 @@
 
     .customer-opinions {
         .product-opinion-actions {
-            border: 1px solid @opinion-alert-error-border !important;
+            &.liked {
+                border: 1px solid @opinion-alert-success-border !important;
+            }
+
+            &.disliked {
+                border: 1px solid @opinion-alert-error-border !important;
+            }
 
             .actions-btns {
                 align-items: center;
