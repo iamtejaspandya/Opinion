@@ -19,17 +19,14 @@ declare(strict_types=1);
 namespace Dss\Opinion\Controller\Index;
 
 use Dss\Opinion\Model\Config;
-use Dss\Opinion\Model\CustomerOpinionFactory;
-use Dss\Opinion\Model\ResourceModel\CustomerOpinion as CustomerOpinionResource;
-use Dss\Opinion\Model\Service\ProductOpinionUpdater;
+use Dss\Opinion\Model\Service\OpinionManager;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\UrlInterface;
-use Psr\Log\LoggerInterface;
 
 class Delete implements HttpPostActionInterface
 {
@@ -37,27 +34,21 @@ class Delete implements HttpPostActionInterface
      * Constructor.
      *
      * @param Config $config
-     * @param ProductOpinionUpdater $productOpinionUpdater
-     * @param JsonFactory $resultJsonFactory
-     * @param CustomerOpinionFactory $customerOpinionFactory
-     * @param CustomerOpinionResource $customerOpinionResource
      * @param CustomerSession $customerSession
      * @param ManagerInterface $messageManager
-     * @param UrlInterface $url
+     * @param OpinionManager $opinionManager
      * @param RequestInterface $request
-     * @param LoggerInterface $logger
+     * @param JsonFactory $jsonFactory
+     * @param UrlInterface $url
      */
     public function __construct(
         protected Config $config,
-        protected ProductOpinionUpdater $productOpinionUpdater,
-        protected JsonFactory $resultJsonFactory,
-        protected CustomerOpinionFactory $customerOpinionFactory,
-        protected CustomerOpinionResource $customerOpinionResource,
         protected CustomerSession $customerSession,
         protected ManagerInterface $messageManager,
-        protected UrlInterface $url,
+        protected OpinionManager $opinionManager,
         protected RequestInterface $request,
-        protected LoggerInterface $logger
+        protected JsonFactory $jsonFactory,
+        protected UrlInterface $url
     ) {
     }
 
@@ -68,7 +59,7 @@ class Delete implements HttpPostActionInterface
      */
     public function execute(): ResultInterface
     {
-        $result = $this->resultJsonFactory->create();
+        $result = $this->jsonFactory->create();
         $opinionId = (int)$this->request->getParam('opinion_id');
         $myOpinionsUrl = $this->url->getUrl('opinion/index/myopinions');
 
@@ -120,47 +111,21 @@ class Delete implements HttpPostActionInterface
             ]);
         }
 
-        try {
-            $customerId = (int)$this->customerSession->getCustomerId();
-            $opinion = $this->customerOpinionFactory->create();
-            $this->customerOpinionResource->load($opinion, $opinionId);
+        $customerId = (int)$this->customerSession->getCustomerId();
+        $response = $this->opinionManager->customerOpinionDelete($customerId, $opinionId);
 
-            if (!$opinion->getId() || (int)$opinion->getCustomerId() !== $customerId) {
-                $this->messageManager->addErrorMessage(
-                    __('Invalid opinion or permission denied.')
-                );
-
-                return $result->setData([
-                    'success' => false
-                ]);
-            }
-
-            $productId = (int)$opinion->getProductId();
-            $productName = (string)$opinion->getProductName();
-
-            $this->customerOpinionResource->delete($opinion);
-            $this->productOpinionUpdater->update($productId, $productName);
-
-            $this->messageManager->addSuccessMessage(
-                __('Your opinion has been deleted successfully.')
-            );
-
+        if ($response['success']) {
+            $this->messageManager->addSuccessMessage(__($response['message']));
             return $result->setData([
                 'success' => true,
                 'redirect' => true,
                 'redirect_url' => $myOpinionsUrl
             ]);
-        } catch (\Exception $e) {
-            $this->logger->error('Error deleting opinion: ' . $e->getMessage());
-
-            $this->messageManager->addErrorMessage(
-                __('An error occurred while deleting your opinion.')
-            );
-
+        } else {
+            $this->messageManager->addErrorMessage(__($response['message']));
             return $result->setData([
                 'success' => false,
-                'redirect' => true,
-                'redirect_url' => $myOpinionsUrl
+                'redirect' => false
             ]);
         }
     }

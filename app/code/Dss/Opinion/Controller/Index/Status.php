@@ -18,11 +18,10 @@ declare(strict_types=1);
 
 namespace Dss\Opinion\Controller\Index;
 
-use Dss\Opinion\Model\CustomerOpinionFactory;
-use Dss\Opinion\Model\ResourceModel\CustomerOpinion as CustomerOpinionResource;
+use Dss\Opinion\Model\Service\OpinionManager;
 use Magento\Customer\Model\Session as CustomerSession;
-use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 
@@ -32,16 +31,14 @@ class Status implements HttpGetActionInterface
      * Constructor.
      *
      * @param CustomerSession $customerSession
-     * @param CustomerOpinionFactory $customerProductOpinionFactory
-     * @param CustomerOpinionResource $customerOpinionResource
      * @param JsonFactory $jsonFactory
+     * @param OpinionManager $opinionManager
      * @param RequestInterface $request
      */
     public function __construct(
         protected CustomerSession $customerSession,
-        protected CustomerOpinionFactory $customerProductOpinionFactory,
-        protected CustomerOpinionResource $customerOpinionResource,
         protected JsonFactory $jsonFactory,
+        protected OpinionManager $opinionManager,
         protected RequestInterface $request
     ) {
     }
@@ -53,23 +50,21 @@ class Status implements HttpGetActionInterface
      */
     public function execute(): ResultInterface
     {
-        $resultJson = $this->jsonFactory->create();
+        $result = $this->jsonFactory->create();
 
         if (!$this->customerSession->isLoggedIn()) {
-            return $resultJson->setData(['opinion' => null]);
+            return $result->setData(['opinion' => null]);
         }
 
         $productId = (int)$this->request->getParam('product_id');
         if (!$productId) {
-            return $resultJson->setData(['opinion' => null]);
+            return $result->setData(['opinion' => null]);
         }
 
         $customerId = (int)$this->customerSession->getCustomerId();
+        $opinion = $this->opinionManager->loadByCustomerAndProduct($customerId, $productId);
 
-        $opinion = $this->customerProductOpinionFactory->create();
-        $this->customerOpinionResource->loadByCustomerAndProduct($opinion, $customerId, $productId);
-
-        return $resultJson->setData([
+        return $result->setData([
             'opinion' => $opinion->getOpinion() !== null ? (int)$opinion->getOpinion() : null
         ]);
     }
