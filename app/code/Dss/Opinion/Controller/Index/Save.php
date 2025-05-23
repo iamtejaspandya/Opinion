@@ -122,13 +122,11 @@ class Save implements HttpPostActionInterface
         }
 
         $customerId = (int)$this->customerSession->getCustomerId();
-        $productName = $data['product_name'] ?? '';
         $newOpinion = (int)$data['opinion'];
 
         $saveResult = $this->opinionManager->customerOpinionSave(
             $customerId,
             $productId,
-            $productName,
             $newOpinion
         );
 

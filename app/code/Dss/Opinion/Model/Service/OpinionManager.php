@@ -24,6 +24,8 @@ use Dss\Opinion\Model\CustomerOpinion as CustomerOpinionModel;
 use Dss\Opinion\Model\OpinionFactory as ProductOpinionFactory;
 use Dss\Opinion\Model\ResourceModel\CustomerOpinion as CustomerOpinionResource;
 use Dss\Opinion\Model\ResourceModel\Opinion as ProductOpinionResource;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Psr\Log\LoggerInterface;
 
 class OpinionManager
@@ -36,6 +38,7 @@ class OpinionManager
      * @param CustomerOpinionResource $customerOpinionResource
      * @param ProductOpinionResource $productOpinionResource
      * @param ProductOpinionFactory $productOpinionFactory
+     * @param ProductRepositoryInterface $productRepository
      * @param LoggerInterface $logger
      */
     public function __construct(
@@ -44,6 +47,7 @@ class OpinionManager
         protected CustomerOpinionResource $customerOpinionResource,
         protected ProductOpinionResource $productOpinionResource,
         protected ProductOpinionFactory $productOpinionFactory,
+        protected ProductRepositoryInterface $productRepository,
         protected LoggerInterface $logger
     ) {
     }
@@ -74,7 +78,6 @@ class OpinionManager
      *
      * @param int $customerId
      * @param int $productId
-     * @param string $productName
      * @param int $newOpinion
      * @return array ['success' => bool, 'message' => string, 'opinion' => int|null]
      * @throws \Exception
@@ -82,11 +85,19 @@ class OpinionManager
     public function customerOpinionSave(
         int $customerId,
         int $productId,
-        string $productName,
         int $newOpinion
     ): array {
         try {
             $opinion = $this->loadByCustomerAndProduct($customerId, $productId);
+            $productName = $this->getProductNameById($productId);
+
+            if ($productName === null) {
+                return [
+                    'success' => false,
+                    'message' => __('Product name not found.'),
+                    'opinion' => null
+                ];
+            }
 
             if ($opinion->getId()) {
                 if ((int)$opinion->getOpinion() === $newOpinion) {
@@ -108,7 +119,7 @@ class OpinionManager
             }
 
             $this->customerOpinionResource->save($opinion);
-            $this->productOpinionUpdate($productId, $productName);
+            $this->productOpinionUpdate($productId);
 
             return [
                 'success' => true,
@@ -156,10 +167,8 @@ class OpinionManager
             }
 
             $productId = (int)$opinion->getProductId();
-            $productName = (string)$opinion->getProductName();
-
             $this->customerOpinionResource->delete($opinion);
-            $this->productOpinionUpdate($productId, $productName);
+            $this->productOpinionUpdate($productId);
 
             return [
                 'success' => true,
@@ -178,13 +187,10 @@ class OpinionManager
      * Updates the like/dislike counts for a product.
      *
      * @param int $productId
-     * @param string $productName
      * @return void
      */
-    public function productOpinionUpdate(
-        int $productId,
-        string $productName
-    ): void {
+    public function productOpinionUpdate(int $productId): void
+    {
         try {
             $connection = $this->customerOpinionResource->getConnection();
             $tableName = $this->customerOpinionResource->getMainTable();
@@ -200,6 +206,11 @@ class OpinionManager
 
             $totalLikes = (int)($result['total_likes'] ?? 0);
             $totalDislikes = (int)($result['total_dislikes'] ?? 0);
+
+            $productName = $this->getProductNameById($productId);
+            if ($productName === null) {
+                return;
+            }
 
             $productOpinion = $this->productOpinionFactory->create();
             $this->productOpinionResource->load($productOpinion, $productId, 'product_id');
@@ -281,7 +292,7 @@ class OpinionManager
                 $message = $customerOpinion !== null
                     ? ($customerOpinion
                         ? __(
-                            'You and %1% of our %2 customers liked this product',
+                            'Great pick! %1% of our %2 customers agree with you',
                             $percentage,
                             $totalOpinions
                         )
@@ -313,5 +324,25 @@ class OpinionManager
             'message' => $message,
             'class' => $class
         ];
+    }
+
+    /**
+     * Get product name by product ID.
+     *
+     * @param int $productId
+     * @return string|null
+     */
+    public function getProductNameById(int $productId): ?string
+    {
+        try {
+            $product = $this->productRepository->getById($productId);
+            return $product->getName();
+        } catch (NoSuchEntityException $e) {
+            $this->logger->warning("Product with ID $productId not found.");
+            return null;
+        } catch (\Exception $e) {
+            $this->logger->error("Error fetching product name for ID $productId: " . $e->getMessage());
+            return null;
+        }
     }
 }
