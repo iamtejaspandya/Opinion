@@ -24,12 +24,28 @@ use Dss\Opinion\Model\ResourceModel\CustomerOpinion\CollectionFactory;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Image;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Theme\Block\Html\Pager;
 
 class MyOpinions extends AbstractOpinion
 {
+    /**
+     * @var bool
+     */
+    protected $noProductMatch = false;
+
+    /**
+     * @var int
+     */
+    protected $matchedOpinionCount = 0;
+
+    /**
+     * @var string|null
+     */
+    protected $searchQuery;
+
     /**
      * Constructor.
      *
@@ -38,6 +54,7 @@ class MyOpinions extends AbstractOpinion
      * @param ProductRepositoryInterface $productRepository
      * @param CollectionFactory $opinionCollectionFactory
      * @param Image $imageHelper
+     * @param ProductCollectionFactory $productCollectionFactory
      * @param array $data
      */
     public function __construct(
@@ -46,6 +63,7 @@ class MyOpinions extends AbstractOpinion
         ProductRepositoryInterface $productRepository,
         protected CollectionFactory $opinionCollectionFactory,
         protected Image $imageHelper,
+        protected ProductCollectionFactory $productCollectionFactory,
         array $data = []
     ) {
         parent::__construct(
@@ -63,8 +81,27 @@ class MyOpinions extends AbstractOpinion
      */
     public function getCustomerOpinions(): Collection
     {
+        $searchQuery = $this->getSearchQuery();
         $collection = $this->opinionCollectionFactory->create()
             ->addFieldToFilter('customer_id', $this->config->getCustomerId());
+
+        if ($searchQuery) {
+            $matchingProductIds = $this->getMatchingProductIdsByName($searchQuery);
+
+            if (!empty($matchingProductIds)) {
+                $collection->addFieldToFilter('product_id', ['in' => $matchingProductIds]);
+                $this->matchedOpinionCount = $collection->getSize();
+
+                if ($this->matchedOpinionCount === 0) {
+                    $this->noProductMatch = true;
+
+                    $collection = $this->opinionCollectionFactory->create()
+                        ->addFieldToFilter('customer_id', $this->config->getCustomerId());
+                }
+            } else {
+                $this->noProductMatch = true;
+            }
+        }
 
         $collection->setCurPage((int)($this->getRequest()->getParam('p') ?? 1));
         $collection->setPageSize((int)($this->getRequest()->getParam('limit') ?? 5));
@@ -181,15 +218,32 @@ class MyOpinions extends AbstractOpinion
      */
     public function getOpinionStats(): array
     {
+        $searchQuery = $this->getSearchQuery();
         $currentPageOpinions = $this->getCustomerOpinions();
-        $customerOpinions = $this->opinionCollectionFactory->create()
-            ->addFieldToFilter('customer_id', $this->config->getCustomerId());
-        $likeCount = 0;
-        $currentPageLikeCount = 0;
-        $dislikeCount = 0;
-        $currentPageDislikeCount = 0;
+        $customerId = $this->config->getCustomerId();
 
-        foreach ($customerOpinions as $opinion) {
+        $baseOpinions = $this->opinionCollectionFactory->create()
+            ->addFieldToFilter('customer_id', $customerId);
+        $totalOpinions = clone $baseOpinions;
+
+        $searchFiltered = false;
+        if ($searchQuery) {
+            $matchingProductIds = $this->getMatchingProductIdsByName($searchQuery);
+            if (!empty($matchingProductIds)) {
+                $totalOpinions->addFieldToFilter('product_id', ['in' => $matchingProductIds]);
+                $searchFiltered = true;
+            } else {
+                $searchFiltered = false;
+            }
+        }
+
+        if ($searchFiltered && $totalOpinions->getSize() === 0) {
+            $totalOpinions = $baseOpinions;
+        }
+
+        $likeCount = 0;
+        $dislikeCount = 0;
+        foreach ($totalOpinions as $opinion) {
             if ((int)$opinion->getOpinion() === 1) {
                 $likeCount++;
             } else {
@@ -197,11 +251,8 @@ class MyOpinions extends AbstractOpinion
             }
         }
 
-        $likePercent = $likeCount > 0 ? round(
-            ($likeCount / ($likeCount + $dislikeCount)) * 100,
-            2
-        ) : 0;
-
+        $currentPageLikeCount = 0;
+        $currentPageDislikeCount = 0;
         foreach ($currentPageOpinions as $opinion) {
             if ((int)$opinion->getOpinion() === 1) {
                 $currentPageLikeCount++;
@@ -210,18 +261,21 @@ class MyOpinions extends AbstractOpinion
             }
         }
 
-        $currentLikePercent = $currentPageLikeCount > 0 ? round(
-            ($currentPageLikeCount / ($currentPageLikeCount + $currentPageDislikeCount)) * 100,
-            2
-        ) : 0;
+        $likePercent = ($likeCount + $dislikeCount) > 0
+            ? round(($likeCount / ($likeCount + $dislikeCount)) * 100, 2)
+            : 0;
+
+        $currentLikePercent = ($currentPageLikeCount + $currentPageDislikeCount) > 0
+            ? round(($currentPageLikeCount / ($currentPageLikeCount + $currentPageDislikeCount)) * 100, 2)
+            : 0;
 
         return [
             'likes' => $likeCount,
-            'like_percent' => $likePercent,
             'dislikes' => $dislikeCount,
+            'like_percent' => $likePercent,
             'current_page_likes' => $currentPageLikeCount,
-            'current_page_like_percent' => $currentLikePercent,
             'current_page_dislikes' => $currentPageDislikeCount,
+            'current_page_like_percent' => $currentLikePercent,
             'total' => $likeCount + $dislikeCount,
             'current_page_total' => $currentPageLikeCount + $currentPageDislikeCount,
         ];
@@ -245,5 +299,54 @@ class MyOpinions extends AbstractOpinion
     public function getCurrentOpinionColors(): array
     {
         return $this->config->getCurrentOpinionColors();
+    }
+
+    /**
+     * Get search query from request parameters
+     *
+     * @return string
+     */
+    public function getSearchQuery(): string
+    {
+        if ($this->searchQuery === null) {
+            $this->searchQuery = trim((string) $this->getRequest()->getParam('q'));
+        }
+
+        return $this->searchQuery;
+    }
+
+    /**
+     * Retrieve product IDs matching the search query by product name
+     *
+     * @param string $query
+     * @return array
+     */
+    protected function getMatchingProductIdsByName(string $query): array
+    {
+        $collection = $this->productCollectionFactory->create();
+        $collection->addAttributeToFilter('name', ['like' => '%' . $query . '%']);
+        $collection->addAttributeToSelect('entity_id');
+
+        return $collection->getColumnValues('entity_id');
+    }
+
+    /**
+     * Check if there are no product matches for the search query
+     *
+     * @return bool
+     */
+    public function hasNoProductMatch(): bool
+    {
+        return $this->noProductMatch ?? false;
+    }
+
+    /**
+     * Get the count of matched opinions based on the search query
+     *
+     * @return int
+     */
+    public function getMatchedOpinionCount(): int
+    {
+        return $this->matchedOpinionCount;
     }
 }
