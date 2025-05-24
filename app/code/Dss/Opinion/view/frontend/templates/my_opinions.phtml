@@ -38,6 +38,38 @@ $opinionStats = $block->getOpinionStats();
         <?php endif; ?>
     <?php endif; ?>
     <?php if ($customerOpinions->getSize()): ?>
+        <div class="opinion-search">
+            <form method="get" id="opinion-search-form" class="opinion-search-form" action="">
+                <input type="text"
+                        name="q"
+                        placeholder="Search opinion by product name..."
+                        value="<?= $escaper->escapeHtml($block->getRequest()->getParam('q')) ?>" />
+                <button type="submit" class="action primary search-button" title="Search">
+                    <?= $escaper->escapeHtml(__('Search')) ?>
+                </button>
+            </form>
+            <?php $query = $block->getSearchQuery(); ?>
+            <?php if ($block->hasNoProductMatch()): ?>
+                <div class="message info not-found">
+                    <div>
+                        <?= $escaper->escapeHtml(__(
+                            'Sorry, no opinions were found for products matching "%1". Here are all your opinions.',
+                            $query
+                        )) ?>
+                    </div>
+                </div>
+            <?php elseif ($block->getMatchedOpinionCount() > 0): ?>
+                <div class="message success opinion-found">
+                    <div>
+                        <?= $escaper->escapeHtml(__(
+                            'Great! You’ve shared %1 opinion(s) for product matching "%2".',
+                            $block->getMatchedOpinionCount(),
+                            $query
+                        )) ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
         <?php if ($opinionStats): ?>
             <?php if ($block->isOpinionChartEnabled() || $block->isCurrentOpinionChartEnabled()): ?>
                 <div class="opinion-stats" data-mage-init='{"Dss_Opinion/js/chart-type-selector":{}}'>
