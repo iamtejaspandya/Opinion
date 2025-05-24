@@ -61,7 +61,7 @@ class Delete implements HttpPostActionInterface
     {
         $result = $this->jsonFactory->create();
         $opinionId = (int)$this->request->getParam('opinion_id');
-        $myOpinionsUrl = $this->url->getUrl('opinion/index/myopinions');
+        $myOpinionsUrl = $this->request->getServer('HTTP_REFERER') ?? '';
 
         if (!$this->customerSession->isLoggedIn()) {
             $this->messageManager->addErrorMessage(
