@@ -65,6 +65,7 @@ class Save implements HttpPostActionInterface
         $result = $this->jsonFactory->create();
         $data = $this->request->getPostValue();
         $productId = (int)($data['product_id'] ?? 0);
+        $currentPageUrl = $this->request->getServer('HTTP_REFERER') ?? '';
 
         if (!$this->customerSession->isLoggedIn()) {
             $this->messageManager->addErrorMessage(
@@ -86,7 +87,7 @@ class Save implements HttpPostActionInterface
             return $result->setData([
                 'success' => false,
                 'redirect' => true,
-                'redirect_url' => $this->getRedirectUrl($productId)
+                'redirect_url' => $currentPageUrl
             ]);
         }
 
@@ -98,7 +99,7 @@ class Save implements HttpPostActionInterface
             return $result->setData([
                 'success' => false,
                 'redirect' => true,
-                'redirect_url' => $this->getRedirectUrl($productId)
+                'redirect_url' => $currentPageUrl
             ]);
         }
 
@@ -110,7 +111,7 @@ class Save implements HttpPostActionInterface
             return $result->setData([
                 'success' => false,
                 'redirect' => true,
-                'redirect_url' => $this->getRedirectUrl($productId)
+                'redirect_url' => $currentPageUrl
             ]);
         }
 
@@ -152,23 +153,5 @@ class Save implements HttpPostActionInterface
         }
 
         return $result->setData($saveResult);
-    }
-
-    /**
-     * Get product URL or fallback to My Opinions page if accessed from there.
-     *
-     * @param int $productId
-     * @return string
-     */
-    public function getRedirectUrl(int $productId): string
-    {
-        $referer = $this->request->getServer('HTTP_REFERER') ?? '';
-        $myOpinionsUrl = $this->url->getUrl('opinion/index/myopinions');
-
-        if (str_contains($referer, 'opinion/index/myopinions')) {
-            return $myOpinionsUrl;
-        }
-
-        return $this->productRepository->getById($productId)->getProductUrl();
     }
 }
