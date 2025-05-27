@@ -24,8 +24,15 @@ use Dss\Opinion\Model\CustomerOpinion as CustomerOpinionModel;
 use Dss\Opinion\Model\OpinionFactory as ProductOpinionFactory;
 use Dss\Opinion\Model\ResourceModel\CustomerOpinion as CustomerOpinionResource;
 use Dss\Opinion\Model\ResourceModel\Opinion as ProductOpinionResource;
+use Magento\Bundle\Model\Selection;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Visibility;
+use Magento\Catalog\Model\ResourceModel\Product\Collection;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Psr\Log\LoggerInterface;
 
 class OpinionManager
@@ -39,6 +46,10 @@ class OpinionManager
      * @param ProductOpinionResource $productOpinionResource
      * @param ProductOpinionFactory $productOpinionFactory
      * @param ProductRepositoryInterface $productRepository
+     * @param CollectionFactory $productCollectionFactory
+     * @param Configurable $configurableType
+     * @param Grouped $groupedType
+     * @param Selection $bundleSelection
      * @param LoggerInterface $logger
      */
     public function __construct(
@@ -48,6 +59,10 @@ class OpinionManager
         protected ProductOpinionResource $productOpinionResource,
         protected ProductOpinionFactory $productOpinionFactory,
         protected ProductRepositoryInterface $productRepository,
+        protected CollectionFactory $productCollectionFactory,
+        protected Configurable $configurableType,
+        protected Grouped $groupedType,
+        protected Selection $bundleSelection,
         protected LoggerInterface $logger
     ) {
     }
@@ -344,5 +359,58 @@ class OpinionManager
             $this->logger->error("Error fetching product name for ID $productId: " . $e->getMessage());
             return null;
         }
+    }
+
+    /**
+     * Retrieve a filtered product collection based on a name query.
+     *
+     * Filters by:
+     * - Product name (LIKE %query%)
+     * - Status: enabled
+     * - Visibility: catalog, search, or both
+     * - Excludes child products of configurable, grouped, and bundle products
+     *
+     * @param string $query
+     * @return Collection
+     */
+    public function getFilteredProductCollection(string $query): Collection
+    {
+        $collection = $this->productCollectionFactory->create()
+            ->addAttributeToSelect('name')
+            ->addAttributeToFilter('name', ['like' => '%' . $query . '%'])
+            ->addAttributeToFilter('status', Status::STATUS_ENABLED)
+            ->addAttributeToFilter('visibility', ['in' => [
+                Visibility::VISIBILITY_IN_CATALOG,
+                Visibility::VISIBILITY_IN_SEARCH,
+                Visibility::VISIBILITY_BOTH,
+            ]]);
+
+        $productIds = $collection->getAllIds();
+
+        $childProductIds = [];
+
+        $childProductIds = array_merge(
+            $childProductIds,
+            ...array_values((array) $this->configurableType->getChildrenIds($productIds)),
+            ...array_values((array) $this->groupedType->getChildrenIds($productIds)),
+            ...array_values((array) $this->bundleSelection->getChildrenIds($productIds))
+        );
+
+        if (!empty($childProductIds)) {
+            $collection->addFieldToFilter('entity_id', ['nin' => $childProductIds]);
+        }
+
+        return $collection;
+    }
+
+    /**
+     * Get an array of matching product IDs after filtering by name and excluding child products.
+     *
+     * @param string $query
+     * @return int[]
+     */
+    public function getMatchingProductIds(string $query): array
+    {
+        return $this->getFilteredProductCollection($query)->getAllIds();
     }
 }

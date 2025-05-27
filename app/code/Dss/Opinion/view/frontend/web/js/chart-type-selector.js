@@ -11,8 +11,8 @@ define([
 
             if ($chartWrapper.length) {
                 const $selectorWrapper = $('<div>', { class: 'chart-type-selector-wrapper' });
-                const $label = $('<label>', { for: 'chart-type', text: 'Chart Type' });
-                const $select = $('<select>', { id: 'chart-type', name: 'chart-type' });
+                const $label = $('<label>', { class: 'chart-type-label', for: 'chart-type', text: 'Chart Type' });
+                const $select = $('<select>', { class: 'chart-type-selector', id: 'chart-type', name: 'chart-type' });
 
                 chartTypes.forEach(function (type) {
                     const $option = $('<option>', {

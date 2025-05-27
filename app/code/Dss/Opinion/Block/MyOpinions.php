@@ -21,10 +21,10 @@ namespace Dss\Opinion\Block;
 use Dss\Opinion\Model\Config;
 use Dss\Opinion\Model\ResourceModel\CustomerOpinion\Collection;
 use Dss\Opinion\Model\ResourceModel\CustomerOpinion\CollectionFactory;
+use Dss\Opinion\Model\Service\OpinionManager;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Image;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Theme\Block\Html\Pager;
@@ -53,8 +53,8 @@ class MyOpinions extends AbstractOpinion
      * @param Config $config
      * @param ProductRepositoryInterface $productRepository
      * @param CollectionFactory $opinionCollectionFactory
+     * @param OpinionManager $opinionManager
      * @param Image $imageHelper
-     * @param ProductCollectionFactory $productCollectionFactory
      * @param array $data
      */
     public function __construct(
@@ -62,8 +62,8 @@ class MyOpinions extends AbstractOpinion
         Config $config,
         ProductRepositoryInterface $productRepository,
         protected CollectionFactory $opinionCollectionFactory,
+        protected OpinionManager $opinionManager,
         protected Image $imageHelper,
-        protected ProductCollectionFactory $productCollectionFactory,
         array $data = []
     ) {
         parent::__construct(
@@ -323,11 +323,13 @@ class MyOpinions extends AbstractOpinion
      */
     protected function getMatchingProductIdsByName(string $query): array
     {
-        $collection = $this->productCollectionFactory->create();
-        $collection->addAttributeToFilter('name', ['like' => '%' . $query . '%']);
-        $collection->addAttributeToSelect('entity_id');
+        $productIdsParam = $this->getRequest()->getParam('product_ids');
 
-        return $collection->getColumnValues('entity_id');
+        if ($productIdsParam) {
+            return array_filter(explode(',', $productIdsParam), 'is_numeric');
+        }
+
+        return $this->opinionManager->getMatchingProductIds($query);
     }
 
     /**

@@ -17,6 +17,8 @@
 /** @var \Dss\Opinion\Block\MyOpinions $block */
 $customerOpinions = $block->getCustomerOpinions();
 $opinionStats = $block->getOpinionStats();
+$query = $block->getRequest()->getParam('q');
+$queryProductIds = $block->getRequest()->getParam('product_ids');
 ?>
 
 <div class="dss-customer-opinions">
@@ -40,10 +42,23 @@ $opinionStats = $block->getOpinionStats();
     <?php if ($customerOpinions->getSize()): ?>
         <div class="opinion-search">
             <form method="get" id="opinion-search-form" class="opinion-search-form" action="">
-                <input type="text"
-                        name="q"
-                        placeholder="Search opinion by product name..."
-                        value="<?= $escaper->escapeHtml($block->getRequest()->getParam('q')) ?>" />
+                <div class="suggestion-wrapper">
+                    <input type="text"
+                           class="opinion-search-input"
+                           id="opinion-search-input"
+                           name="q"
+                           autocomplete="off"
+                           placeholder="Search opinion by product name..."
+                           value="<?= $escaper->escapeHtml($query) ?>"
+                           data-mage-init='{"Dss_Opinion/js/api/autosuggest": {}}' />
+
+                    <input type="hidden"
+                           name="product_ids"
+                           id="product_ids_input"
+                           value="<?= $escaper->escapeHtml($queryProductIds) ?>" />
+
+                    <ul id="opinion-suggestions" class="suggestion-list"></ul>
+                </div>
                 <button type="submit" class="action primary search-button" title="Search">
                     <?= $escaper->escapeHtml(__('Search')) ?>
                 </button>
