@@ -28,21 +28,21 @@
                 transition: background-color .3s ease-in-out, color .3s ease-in-out, opacity .3s ease-in-out, transform .3s ease-in-out;
 
                 &.liked {
-                    background-color: @opinion-alert-success-bg;
-                    border: 1px solid @opinion-border-color;
-                    color: @opinion-alert-success-text;
+                    background-color: @opinion-success-bg;
+                    border: 1px solid @opinion-success-border;
+                    color: @opinion-success-text;
                 }
 
                 &.disliked {
-                    background-color: @opinion-alert-error-bg;
-                    border: 1px solid @opinion-border-color;
-                    color: @opinion-alert-error-text;
+                    background-color: @opinion-error-bg;
+                    border: 1px solid @opinion-error-border;
+                    color: @opinion-error-text;
                 }
 
                 &.neutral {
-                    background-color: @opinion-alert-warning-bg;
-                    border: 1px solid @opinion-border-color;
-                    color: @opinion-text-color;
+                    background-color: @opinion-neutral-bg;
+                    border: 1px solid @opinion-neutral-border;
+                    color: @opinion-neutral-text;
                 }
             }
 
@@ -107,15 +107,15 @@
                 padding: 10px;
 
                 &.success {
-                    background: @opinion-alert-success-bg;
-                    border: 1px solid @opinion-alert-success-border;
-                    color: @opinion-alert-success-text;
+                    background: @opinion-success-bg;
+                    border: 1px solid @opinion-success-border;
+                    color: @opinion-success-text;
                 }
 
                 &.error {
-                    background: @opinion-alert-error-bg;
-                    border: 1px solid @opinion-alert-error-border;
-                    color: @opinion-alert-error-text;
+                    background: @opinion-error-bg;
+                    border: 1px solid @opinion-error-border;
+                    color: @opinion-error-text;
                 }
             }
         }
@@ -156,13 +156,6 @@
             right: 0;
             top: 100%;
             z-index: 1000;
-
-            .no-results {
-                color: @opinion-gray-color;
-                cursor: default;
-                font-style: italic;
-                padding: 8px 12px;
-            }
         }
 
         .suggestion-list li {
@@ -189,15 +182,24 @@
         vertical-align: middle;
 
         &.liked {
-            background-color: @opinion-alert-success-bg;
-            border: 1px solid @opinion-alert-success-border;
-            color: @opinion-alert-success-text;
+            background-color: @opinion-success-bg;
+            border: 1px solid @opinion-success-border;
+            color: @opinion-success-text;
         }
 
         &.disliked {
-            background-color: @opinion-alert-error-bg;
-            border: 1px solid @opinion-alert-error-border;
-            color: @opinion-alert-error-text;
+            background-color: @opinion-error-bg;
+            border: 1px solid @opinion-error-border;
+            color: @opinion-error-text;
+        }
+
+        .opinion-product-image {
+            aspect-ratio: 1 / 1;
+            display: block;
+            margin: 0 auto;
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
         }
 
         .actions-btns {
@@ -284,11 +286,13 @@
         margin: 10px auto;
         width: 40%;
 
-        label {
+        .chart-total-label,
+        .chart-percentage-label {
             font-size: 12px;
             font-weight: 500;
 
-            span {
+            .chart-total,
+            .chart-percentage {
                 font-size: 14px;
                 font-weight: 600;
             }
@@ -335,11 +339,11 @@
     .customer-opinions {
         .product-opinion-actions {
             &.liked {
-                border: 1px solid @opinion-alert-success-border !important;
+                border: 1px solid @opinion-success-border !important;
             }
 
             &.disliked {
-                border: 1px solid @opinion-alert-error-border !important;
+                border: 1px solid @opinion-error-border !important;
             }
 
             .actions-btns {
@@ -376,34 +380,50 @@
     transform: scale(.9);
     transition: background-color .3s ease-in-out, color .3s ease-in-out, opacity .3s ease-in-out, transform .3s ease-in-out;
 
+    &.no-opinion {
+        background: fade(@opinion-no-opinion-bg, 80%);
+        border: 1px solid @opinion-no-opinion-border;
+    }
+
     &.one-opinion {
-        background: fade(@opinion-alert-one-opinion-bg, 80%);
-        color: @opinion-white-color;
-    }
-
-    &.liked {
-        background: fade(@opinion-alert-success-text, 80%);
-    }
-
-    &.someliked {
-        background: fade(@opinion-primary-color, 80%);
-    }
-
-    &.mixed {
-        background: fade(@opinion-alert-mixed-bg, 80%);
+        background: fade(@opinion-one-opinion-bg, 80%);
+        border: 1px solid @opinion-one-opinion-border;
     }
 
     &.not-enough {
-        background: fade(@opinion-alert-info-bg, 80%);
-        color: @opinion-alert-info-text;
+        background: fade(@opinion-not-enough-bg, 80%);
+        border: 1px solid @opinion-not-enough-border;
+        color: @opinion-not-enough-text;
     }
 
-    &.no-opinion {
-        background: fade(@opinion-alert-no-opinion-bg, 80%);
+    &.someliked {
+        background-color: fade(@opinion-someliked-bg, 80%);
+        border: 1px solid @opinion-someliked-border;
+        color: @opinion-someliked-text;
+    }
+
+    &.mixed {
+        background-color: fade(@opinion-neutral-bg, 80%);
+        border: 1px solid @opinion-neutral-border;
+        color: @opinion-neutral-text;
+    }
+
+    &.liked {
+        background: fade(@opinion-success-bg, 80%);
+        border: 1px solid @opinion-success-border;
+        color: @opinion-success-text;
+    }
+
+    &.all-liked {
+        animation: popPulse .6s ease-in-out forwards, subtleGlow 3s ease-in-out infinite;
+        background: linear-gradient(135deg, @opinion-all-liked-gradient-start 0%, @opinion-all-liked-gradient-end 100%);
+        border: 1px solid @opinion-all-liked-border;
     }
 
     &.error {
-        background: fade(@opinion-alert-error-text, 80%);
+        background: fade(@opinion-error-bg, 80%);
+        border: 1px solid @opinion-error-border;
+        color: @opinion-error-text;
     }
 }
 
@@ -419,5 +439,25 @@
     to {
         opacity: 1;
         transform: scale(1);
+    }
+}
+
+@keyframes popPulse {
+    0% {
+        opacity: 0;
+        transform: scale(.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes subtleGlow {
+    0%, 100% {
+        box-shadow: 0 0 10px fade(@opinion-all-liked-gradient-start, 30%);
+    }
+    50% {
+        box-shadow: 0 0 20px fade(@opinion-all-liked-gradient-start, 60%);
     }
 }

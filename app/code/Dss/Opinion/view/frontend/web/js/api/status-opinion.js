@@ -1,11 +1,14 @@
 define([
-    'jquery'
-], function ($) {
+    'jquery',
+    'mage/url'
+], function ($, urlBuilder) {
     'use strict';
 
     return function (config, callback) {
+        const url = urlBuilder.build('/opinion/index/status');
+
         $.ajax({
-            url: config.statusUrl,
+            url: url,
             type: 'GET',
             data: { product_id: config.productId },
             showLoader: true,

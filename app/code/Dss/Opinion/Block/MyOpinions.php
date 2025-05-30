@@ -132,7 +132,7 @@ class MyOpinions extends AbstractOpinion
      */
     public function getImageUrl(ProductInterface $product): string
     {
-        return $this->imageHelper->init($product, 'category_page_grid')->getUrl();
+        return $this->imageHelper->init($product, 'product_thumbnail_image')->getUrl();
     }
 
     /**
@@ -149,8 +149,9 @@ class MyOpinions extends AbstractOpinion
             )->setAvailableLimit([
                     5 => 5,
                     10 => 10,
-                    15 => 15,
-                    20 => 20
+                    20 => 20,
+                    50 => 50,
+                    100 => 100
                 ])
                 ->setShowPerPage(true)
                 ->setCollection($collection);
@@ -309,7 +310,7 @@ class MyOpinions extends AbstractOpinion
     public function getSearchQuery(): string
     {
         if ($this->searchQuery === null) {
-            $this->searchQuery = trim((string) $this->getRequest()->getParam('q'));
+            $this->searchQuery = trim((string) $this->getRequest()->getParam('opinion_query'));
         }
 
         return $this->searchQuery;

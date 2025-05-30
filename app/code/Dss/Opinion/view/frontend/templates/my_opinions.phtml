@@ -17,7 +17,7 @@
 /** @var \Dss\Opinion\Block\MyOpinions $block */
 $customerOpinions = $block->getCustomerOpinions();
 $opinionStats = $block->getOpinionStats();
-$query = $block->getRequest()->getParam('q');
+$query = $block->getRequest()->getParam('opinion_query');
 $queryProductIds = $block->getRequest()->getParam('product_ids');
 ?>
 
@@ -46,18 +46,18 @@ $queryProductIds = $block->getRequest()->getParam('product_ids');
                     <input type="text"
                            class="opinion-search-input"
                            id="opinion-search-input"
-                           name="q"
+                           name="opinion_query"
                            autocomplete="off"
                            placeholder="Search opinion by product name..."
                            value="<?= $escaper->escapeHtml($query) ?>"
-                           data-mage-init='{"Dss_Opinion/js/api/autosuggest": {}}' />
+                           data-mage-init='{"Dss_Opinion/js/autosuggest": {}}' />
 
                     <input type="hidden"
                            name="product_ids"
                            id="product_ids_input"
                            value="<?= $escaper->escapeHtml($queryProductIds) ?>" />
 
-                    <ul id="opinion-suggestions" class="suggestion-list"></ul>
+                    <ul id="opinion-suggestions" class="suggestion-list" style="display: none;"></ul>
                 </div>
                 <button type="submit" class="action primary search-button" title="Search">
                     <?= $escaper->escapeHtml(__('Search')) ?>
@@ -134,8 +134,10 @@ $queryProductIds = $block->getRequest()->getParam('product_ids');
                                     <a href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>">
                                         <img src="<?= $escaper->escapeUrl($productImage) ?>"
                                             alt="<?= $escaper->escapeHtml($product->getName()) ?>"
-                                            width="50"
-                                            height="50" />
+                                            width="75"
+                                            height="75"
+                                            loading="lazy"
+                                            class="opinion-product-image" />
                                     </a>
                                 </td>
                                 <td data-th="<?= $escaper->escapeHtml(__('Product Name')) ?>"
@@ -150,8 +152,6 @@ $queryProductIds = $block->getRequest()->getParam('product_ids');
                                     <?= $escaper->escapeHtml($opinionText) ?>
                                 </td>
                                 <?php
-                                    $saveUrl = $block->getUrl('opinion/index/save');
-                                    $deleteUrl = $block->getUrl('opinion/index/delete');
                                     $opinionId = $opinion->getCustomerOpinionId();
                                     $formKey = $block->getFormKey();
                                     $productId = $opinion->getProductId();
@@ -193,8 +193,6 @@ $queryProductIds = $block->getRequest()->getParam('product_ids');
                                         "#opinion-actions-<?= $escaper->escapeJs($opinionId) ?>": {
                                             "opinionActions": {
                                                 "elementId": "opinion-actions-<?= $escaper->escapeJs($opinionId) ?>",
-                                                "saveUrl": "<?= $escaper->escapeJs($saveUrl) ?>",
-                                                "deleteUrl": "<?= $escaper->escapeJs($deleteUrl) ?>",
                                                 "opinionId": "<?= $escaper->escapeJs($opinionId) ?>",
                                                 "formKey": "<?= $escaper->escapeJs($formKey) ?>",
                                                 "productId": "<?= $escaper->escapeJs($productId) ?>",

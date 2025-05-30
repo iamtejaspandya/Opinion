@@ -1,13 +1,14 @@
 define([
-    'jquery'
-], function ($) {
+    'jquery',
+    'mage/url'
+], function ($, urlBuilder) {
     'use strict';
 
     return function (config, element) {
         let $label = $(element);
         let productId = config.productId;
-        let url = config.labelUrl;
-        let classes = 'one-opinion liked someliked mixed not-enough no-opinion error';
+        let classes = 'one-opinion all-liked liked someliked mixed not-enough no-opinion error';
+        const url = urlBuilder.build('/opinion/index/productopinionlabel');
 
         function updateLabel(text, className) {
             $label.html(text).removeClass(classes).addClass(className).show();

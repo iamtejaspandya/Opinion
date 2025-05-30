@@ -32,12 +32,25 @@
                     sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Product Opinion</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[
+                        Enable/Disable the product opinion feature.
+                        <br /><br />
+                        <em>Example: When disabled, all opinion-related functionality will be turned off.</em>]]>
+                    </comment>
                 </field>
 
                 <field id="get_opinion" translate="label" type="select"
                     sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Allow Customers to Submit Opinions</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[
+                        Allow customers to submit their opinions on products.
+                        <br /><br />
+                        <em>
+                            Example: If set to "No", customers will not be able to submit opinions,
+                            but existing opinions will still be displayed on the "My Opinions" page.
+                        </em>]]>
+                    </comment>
                     <depends>
                         <field id="enable_product_opinion">1</field>
                     </depends>
@@ -48,10 +61,12 @@
                     <label>Disabled Opinion Message</label>
                     <comment><![CDATA[
                         This message will be displayed when all customers are not allowed to submit opinions.
+                        <br /><br />
+                        <em>
+                            Example: "We are not accepting product opinions at the moment, Please check back later."
+                        </em>
                         <br />
-                        Example: "We are not accepting product opinions at the moment, Please check back later."
-                        <br />
-                        If you don't want to show any message, leave this field empty.]]>
+                        <em>Note: Leave this field empty if you do not wish to display any message.</em>]]>
                     </comment>
                     <depends>
                         <field id="enable_product_opinion">1</field>
@@ -63,14 +78,18 @@
                     sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Disallowed Customers Message</label>
                     <comment><![CDATA[
-                        You can disallow a customer by the "Can Give Opinion?" to "No" in the customer edit page under
-                        Customers > All Customers > [Edit Customer] > Account Information.
+                        This message will be displayed when such customers are not allowed to submit opinions,
+                        but existing opinions will still be displayed on the "My Opinions" page.
                         <br />
-                        This message will be displayed when specific customers are not allowed to submit opinions.
+                        You can disallow a customer from submitting opinions by setting
+                        <strong>"Can Give Opinion?"</strong> to <strong>"No"</strong> on the customer edit page:<br />
+                        <strong>Customers > All Customers > [Edit Customer] > Account Information</strong>
+                        <br /><br />
+                        <em>
+                            Example: "You are not allowed to give an opinion. Please contact us for more information."
+                        </em>
                         <br />
-                        Example: "You are not allowed to give an opinion, please contact us for more information."
-                        <br />
-                        If you don't want to show any message, leave this field empty.]]>
+                        <em>Note: Leave this field empty if you do not wish to display any message.</em>]]>
                     </comment>
                     <depends>
                         <field id="enable_product_opinion">1</field>
@@ -87,6 +106,14 @@
                     sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show Product Opinion Label</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[
+                        A label will appear on product page showing aggregated opinion data.
+                        <br /><br />
+                        <em>
+                            Example: If enabled,
+                            a label indicating the number of opinions and like percentage will be shown.
+                        </em>]]>
+                    </comment>
                 </field>
 
                 <field id="min_threshold" translate="label comment" type="text" sortOrder="15"
@@ -94,9 +121,11 @@
                     <label>Minimum Threshold</label>
                     <comment><![CDATA[
                         The minimum number of opinions required for a product before displaying percentage-based data.
-                        <br />
-                        Example: If set to 5,
-                        Percentage labels will only be displayed when at least 5 opinions exist in the product.]]>
+                        <br /><br />
+                        <em>
+                            Example: If set to 5,
+                            Percentage labels will only be displayed when at least 5 opinions exist in the product.
+                        </em>]]>
                     </comment>
                     <validate>validate-zero-or-greater required-entry</validate>
                     <depends>
@@ -110,9 +139,11 @@
                     <comment><![CDATA[
                         The minimum percentage of Liked opinions required for a product before
                         displaying percentage-based data.
-                        <br />
-                        Example: If set to 70,
-                        percentage labels will be displayed only when at least 70% liked opinions exist.]]>
+                        <br /><br />
+                        <em>
+                            Example: If set to 70,
+                            percentage labels will be displayed only when at least 70% liked opinions exist.
+                        </em>]]>
                     </comment>
                     <validate>validate-zero-or-greater required-entry</validate>
                     <depends>
@@ -121,10 +152,10 @@
                 </field>
             </group>
 
-            <!-- My Opinion Page Settings -->
+            <!-- My Opinions Page Settings -->
             <group id="opinion_page" translate="label" sortOrder="20"
                 showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>My Opinion Page</label>
+                <label>My Opinions Page</label>
 
                 <field id="show_opinion_chart" translate="label" type="select"
                     sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -132,9 +163,9 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[
                         Enable this option to display a chart representing total product opinions on the
-                        My Opinion page.
-                        <br />
-                        Example: If enabled, a total opinions chart will be shown.]]>
+                        "My Opinions" page.
+                        <br /><br />
+                        <em>Example: If enabled, a total opinions chart will be shown.</em>]]>
                     </comment>
                 </field>
 
@@ -146,9 +177,9 @@
                     <comment><![CDATA[
                         Choose a total data chart's color using the color picker.
                         <br />
-                        Leave the colors empty to use the default colors.
-                        <br />
-                        <strong>Don't use '#' at the beginning of the color code.</strong>]]>
+                        <strong>Don't use '#' at the beginning of the color code.</strong>
+                        <br /><br />
+                        <em>Note: Leave the colors empty to use the default colors.</em>]]>
                     </comment>
                     <depends>
                         <field id="show_opinion_chart">1</field>
@@ -161,10 +192,12 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[
                         Enable this option to display opinion charts based on the products shown on the current
-                        My Opinion page.
-                        <br />
-                        Example: If enabled, a chart showing likes and dislikes for the currently showing products
-                        will be displayed.]]>
+                        "My Opinions" page.
+                        <br /><br />
+                        <em>
+                            Example: If enabled, a chart showing likes and dislikes for the currently showing products
+                            will be displayed.
+                        </em>]]>
                     </comment>
                 </field>
 
@@ -176,9 +209,9 @@
                     <comment><![CDATA[
                         Choose a current page data chart's color using the color picker.
                         <br />
-                        Leave the colors empty to use the default colors.
-                        <br />
-                        <strong>Don't use '#' at the beginning of the color code.</strong>]]>
+                        <strong>Don't use '#' at the beginning of the color code.</strong>
+                        <br /><br />
+                        <em>Note: Leave the colors empty to use the default colors.</em>]]>
                     </comment>
                     <depends>
                         <field id="show_current_opinion_chart">1</field>
@@ -190,9 +223,13 @@
                     <label>Show Total Product Opinion Count</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[
-                        Enable this option to display the number of product opinions on the My Opinion page.
+                        Enable this option to display the number of product opinions on the "My Opinions" page.
+                        <br /><br />
+                        <em>
+                            Example: If enabled, the opinion count will be visible below the both chart(s).
+                        </em>
                         <br />
-                        Example: If enabled, the opinion count will be visible below the both chart.]]>
+                        <em>Note: This setting requires at least one opinion chart to be enabled above.</em>]]>
                     </comment>
                 </field>
 
@@ -201,9 +238,14 @@
                     <label>Show Product Opinion Percentage</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[
-                        Enable this option to display the like percentage for products on the My Opinion page.
+                        Enable this option to display the like percentage for products on the "My Opinions" page.
+                        <br /><br />
+                        <em>
+                            Example: If enabled,
+                            the percentage of likes relative to total opinions will be shown below the both chart(s).
+                        </em>
                         <br />
-                        Example: If enabled, the percentage of likes relative to total opinions will be shown.]]>
+                        <em>Note: This setting requires at least one opinion chart to be enabled above.</em>]]>
                     </comment>
                 </field>
             </group>

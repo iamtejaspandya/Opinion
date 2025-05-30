@@ -1,11 +1,14 @@
 define([
-    'jquery'
-], function ($) {
+    'jquery',
+    'mage/url'
+], function ($, urlBuilder) {
     'use strict';
 
     return function (config, opinionValue, callback) {
+        const url = urlBuilder.build('/opinion/index/save');
+
         $.ajax({
-            url: config.saveUrl,
+            url: url,
             type: 'POST',
             data: {
                 form_key: config.formKey,

@@ -29,14 +29,4 @@ class ProductOpinionLabel extends AbstractOpinion
     {
         return $this->config->isOpinionLabelEnabled();
     }
-
-    /**
-     * Get the AJAX URL for product opinion label.
-     *
-     * @return string
-     */
-    public function getAjaxUrl(): string
-    {
-        return $this->getUrl('opinion/index/productopinionlabel');
-    }
 }

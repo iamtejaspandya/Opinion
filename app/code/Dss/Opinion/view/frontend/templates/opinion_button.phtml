@@ -28,9 +28,6 @@
                     </div>
 
                     <?php
-                        $statusUrl = $block->getUrl('opinion/index/status');
-                        $saveUrl = $block->getUrl('opinion/index/save');
-                        $labelUrl = $block->getUrl('opinion/index/productopinionlabel');
                         $formKey = $block->getFormKey();
                         $productId = $block->getProductId();
                         $productName = $block->getProductName();
@@ -49,9 +46,6 @@
                         {
                             "#opinion-wrapper": {
                                 "opinionHandler": {
-                                    "statusUrl": "<?= $escaper->escapeJs($statusUrl) ?>",
-                                    "saveUrl": "<?= $escaper->escapeJs($saveUrl) ?>",
-                                    "labelUrl": "<?= $escaper->escapeJs($labelUrl) ?>",
                                     "formKey": "<?= $escaper->escapeJs($formKey) ?>",
                                     "productId": "<?= $escaper->escapeJs($productId) ?>",
                                     "productName": "<?= $escaper->escapeJs($productName) ?>",

@@ -47,7 +47,7 @@ class Suggest implements HttpGetActionInterface
      */
     public function execute(): Json
     {
-        $query = $this->request->getParam('q');
+        $query = $this->request->getParam('opinion_query');
         $result = $this->resultJsonFactory->create();
 
         if (!$query || mb_strlen(trim($query)) < 3) {
