@@ -24,20 +24,20 @@ $colors = $parentBlock ? $parentBlock->getCurrentOpinionColors() : [];
     <div class="opinion-chart opinion-chart-container-current">
         <canvas id="page-opinion-chart" class="current-page-opinion-chart"></canvas>
         <?php if ($parentBlock->isOpinionChartTotalEnabled()): ?>
-            <label class="opinion-chart-current">
+            <span class="chart-total-label current-opinion-chart-total">
                 <?= $escaper->escapeHtml(__('Current Page Opinions:')) ?>
-                <span class="current-opinions">
+                <span class="chart-total current-opinions-total">
                     <?= $escaper->escapeHtml($opinionStats['current_page_total']) ?>
                 </span>
-            </label>
+            </span>
         <?php endif; ?>
         <?php if ($parentBlock->isOpinionChartPercentageEnabled()): ?>
-            <label class="opinion-chart-percentage">
+            <span class="chart-percentage-label current-opinion-chart-percentage">
                 <?= $escaper->escapeHtml(__('Current Page Like in Percentage:')) ?>
-                <span class="total-opinions">
+                <span class="chart-percentage current-opinions-percentage">
                     <?= $escaper->escapeHtml($opinionStats['current_page_like_percent'] . '%') ?>
                 </span>
-            </label>
+            </span>
         <?php endif; ?>
     </div>
 

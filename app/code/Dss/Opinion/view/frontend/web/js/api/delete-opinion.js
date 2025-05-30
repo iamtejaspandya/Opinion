@@ -1,17 +1,20 @@
 define([
     'jquery',
+    'mage/url',
     'Magento_Ui/js/modal/confirm'
-], function ($, confirmation) {
+], function ($, urlBuilder, confirmation) {
     'use strict';
 
     return function deleteOpinion(config, callback) {
+        const url = urlBuilder.build('/opinion/index/delete');
+
         confirmation({
             title: 'Delete Opinion',
             content: 'Are you sure you want to delete your opinion for <strong>' + config.productName + '</strong>?',
             actions: {
                 confirm: function () {
                     $.ajax({
-                        url: config.deleteUrl,
+                        url: url,
                         type: 'POST',
                         data: {
                             opinion_id: config.opinionId,

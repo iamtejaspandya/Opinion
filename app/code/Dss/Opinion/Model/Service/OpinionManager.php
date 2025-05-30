@@ -281,29 +281,43 @@ class OpinionManager
         } elseif ($totalOpinions === 1) {
             $message = $customerOpinion !== null
                 ? ($customerOpinion ? __('First opinion in — and it’s a thumbs-up!')
-                                    : __('First opinion in — not your favorite.'))
+                                    : __('First opinion in — not your favorite'))
                 : __('One opinion in! Share yours!');
             $class = 'one-opinion';
         } elseif ($totalOpinions < $minThreshold) {
             if ($totalLikes > 0 && $totalDislikes === 0) {
                 $message = $customerOpinion !== null && $customerOpinion
                     ? __('You liked this—waiting for more opinions!')
-                    : __('Liked by some of our customers.');
+                    : __('Liked by some of our customers');
                 $class = 'someliked';
             } elseif ($totalLikes === 0 && $totalDislikes > 0) {
                 $message = $customerOpinion !== null && !$customerOpinion
-                    ? __('Not your pick! Others haven’t shared yet.')
+                    ? __('Not your pick! Others haven’t shared yet')
                     : __('More opinions needed! What do you think?');
                 $class = 'not-enough';
             } else {
                 $message = $customerOpinion !== null
-                    ? ($customerOpinion ? __('This product got your like!, but opinions are mixed.')
-                                        : __('Not your favorite, but others had mixed opinions.'))
-                    : __('This product has received mixed opinions.');
+                    ? ($customerOpinion ? __('This product got your like!, but opinions are mixed')
+                                        : __('Not your favorite, but others had mixed opinions'))
+                    : __('This product has received mixed opinions');
                 $class = 'mixed';
             }
         } else {
-            if ($percentage >= $minLike) {
+            if ($totalDislikes === 0) {
+                $message = $customerOpinion !== null && $customerOpinion
+                    ? __(
+                        'Everyone’s loving it — %1% out of %2 customers liked this!',
+                        $percentage,
+                        $totalOpinions
+                    )
+                    : __(
+                        'Loved by everyone — %1% of %2 customers liked it',
+                        $percentage,
+                        $totalOpinions
+                    )
+                ;
+                $class = 'all-liked';
+            } elseif ($percentage >= $minLike) {
                 $message = $customerOpinion !== null
                     ? ($customerOpinion
                         ? __(
@@ -325,9 +339,9 @@ class OpinionManager
                 $class = 'liked';
             } else {
                 $message = $customerOpinion !== null
-                    ? ($customerOpinion ? __('This product got your like!, but opinions are mixed.')
-                                        : __('Not your favorite, but others had mixed opinions.'))
-                    : __('This product has received mixed opinions.');
+                    ? ($customerOpinion ? __('This product got your like!, but opinions are mixed')
+                                        : __('Not your favorite, but others had mixed opinions'))
+                    : __('This product has received mixed opinions');
                 $class = 'mixed';
             }
         }

@@ -24,20 +24,20 @@ $colors = $parentBlock ? $parentBlock->getOpinionChartColors() : [];
     <div class="opinion-chart opinion-chart-container-total">
         <canvas id="opinion-chart" class="page-opinion-chart"></canvas>
         <?php if ($parentBlock->isOpinionChartTotalEnabled()): ?>
-            <label class="opinion-chart-total">
+            <span class="chart-total-label opinion-chart-total">
                 <?= $escaper->escapeHtml(__('Total Opinions:')) ?>
-                <span class="total-opinions">
+                <span class="chart-total opinions-total">
                     <?= $escaper->escapeHtml($opinionStats['total']) ?>
                 </span>
-            </label>
+            </span>
         <?php endif; ?>
         <?php if ($parentBlock->isOpinionChartPercentageEnabled()): ?>
-            <label class="opinion-chart-percentage">
+            <span class="chart-percentage-label opinion-chart-percentage">
                 <?= $escaper->escapeHtml(__('Total Like in Percentage:')) ?>
-                <span class="total-opinions">
+                <span class="chart-percentage opinions-percentage">
                     <?= $escaper->escapeHtml($opinionStats['like_percent'] . '%') ?>
                 </span>
-            </label>
+            </span>
         <?php endif; ?>
     </div>
 

@@ -14,14 +14,14 @@ define([
         const $input = $(element);
         const $suggestions = $('#opinion-suggestions');
         const $productIdsInput = $('#product_ids_input');
-        const ajaxUrl = urlBuilder.build('/opinion/index/suggest');
+        const url = urlBuilder.build('/opinion/index/suggest');
 
         function fetchSuggestions(query) {
             $.ajax({
-                url: ajaxUrl,
+                url: url,
                 type: 'GET',
                 dataType: 'json',
-                data: { q: encodeURIComponent(query) },
+                data: { opinion_query: encodeURIComponent(query) },
                 success: function (response) {
                     $suggestions.empty();
 

@@ -43,6 +43,7 @@ class DualColorPicker extends BaseColorPicker
             <input type="text"
                 id="' . $inputId1 . '"
                 placeholder="4caf50"
+                autocomplete="off"
                 class="input-text"
                 value="' . $color1 . '"
                 style="width:100px; margin-right:10px;" />
@@ -50,6 +51,7 @@ class DualColorPicker extends BaseColorPicker
             <input type="text"
                 id="' . $inputId2 . '"
                 placeholder="f44336"
+                autocomplete="off"
                 class="input-text"
                 value="' . $color2 . '"
                 style="width:100px;" />
