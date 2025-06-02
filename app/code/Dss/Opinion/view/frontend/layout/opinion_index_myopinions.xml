@@ -34,11 +34,8 @@
                    template="Dss_Opinion::my_opinions.phtml"
                    cacheable="false">
                 <block class="Magento\Framework\View\Element\Template"
-                       name="opinion_stats"
-                       template="Dss_Opinion::opinion_stats.phtml"/>
-                <block class="Magento\Framework\View\Element\Template"
-                       name="current_page_opinion_stats"
-                       template="Dss_Opinion::current_page_opinion_stats.phtml"/>
+                       name="customer_product_opinion_charts"
+                       template="Dss_Opinion::charts.phtml" />
             </block>
         </referenceContainer>
     </body>

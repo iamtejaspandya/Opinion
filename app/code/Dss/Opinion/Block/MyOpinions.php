@@ -32,19 +32,32 @@ use Magento\Theme\Block\Html\Pager;
 class MyOpinions extends AbstractOpinion
 {
     /**
+     * Property to store if there are no product matches for the search query.
+     *
      * @var bool
      */
     protected $noProductMatch = false;
 
     /**
+     * Property to store the count of matched opinions based on the search query.
+     *
      * @var int
      */
     protected $matchedOpinionCount = 0;
 
     /**
+     * Property to store the search query from request parameters.
+     *
      * @var string|null
      */
     protected $searchQuery;
+
+    /**
+     * Property to indicate if the search query is too short.
+     *
+     * @var bool
+     */
+    protected bool $tooShortQuery = false;
 
     /**
      * Constructor.
@@ -324,13 +337,33 @@ class MyOpinions extends AbstractOpinion
      */
     protected function getMatchingProductIdsByName(string $query): array
     {
+        if (mb_strlen($query) < 3) {
+            $this->tooShortQuery = true;
+            return [];
+        }
+
         $productIdsParam = $this->getRequest()->getParam('product_ids');
 
         if ($productIdsParam) {
             return array_filter(explode(',', $productIdsParam), 'is_numeric');
         }
 
-        return $this->opinionManager->getMatchingProductIds($query);
+        $productIds = $this->opinionManager->getMatchingProductIds($query);
+        if (empty($productIds)) {
+            $this->noProductMatch = true;
+        }
+
+        return $productIds;
+    }
+
+    /**
+     * Check if the search query is too short
+     *
+     * @return bool
+     */
+    public function isTooShortQuery(): bool
+    {
+        return $this->tooShortQuery;
     }
 
     /**

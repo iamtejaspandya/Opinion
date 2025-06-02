@@ -1,8 +1,7 @@
 define([
     'jquery',
-    'opinionSave',
-    'opinionDelete'
-], function ($, saveOpinion, deleteOpinion) {
+    'opinionManager'
+], function ($, opinionManager) {
     'use strict';
 
     return function (config) {
@@ -12,7 +11,7 @@ define([
                 const $row = $button.closest('tr');
                 const opinionValue = $button.data('opinion');
 
-                saveOpinion(config, opinionValue, function (response) {
+                opinionManager.save(config, opinionValue, function (response) {
                     if (response.redirect && response.redirect_url) {
                         window.location.href = response.redirect_url;
                     } else if (response.success) {
@@ -42,7 +41,7 @@ define([
                 const $button = $(this);
                 const $row = $button.closest('tr');
 
-                deleteOpinion({
+                opinionManager.delete({
                     ...config,
                     opinionId: $button.data('opinion-id')
                 }, function (response) {
