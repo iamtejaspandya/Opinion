@@ -58,13 +58,22 @@ class MyOpinions implements HttpGetActionInterface
         if (!$this->httpContext->getValue(CustomerContext::CONTEXT_AUTH)) {
             /** @var Redirect $resultRedirect */
             $resultRedirect = $this->resultRedirectFactory->create();
+
+            $this->messageManager->addErrorMessage(__(
+                'Oops! You need to be logged in to access "My Opinions". Please log in or sign up to continue.'
+            ));
+
             return $resultRedirect->setPath('customer/account/login');
         }
 
         if (!$this->config->isProductOpinionEnabled()) {
-            $this->messageManager->addErrorMessage(__('The product opinion feature is currently disabled.'));
             /** @var Redirect $resultRedirect */
             $resultRedirect = $this->resultRedirectFactory->create();
+
+            $this->messageManager->addErrorMessage(__(
+                'The product opinion feature is currently disabled.'
+            ));
+
             return $resultRedirect->setPath('customer/account');
         }
 

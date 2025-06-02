@@ -1,9 +1,7 @@
 define([
     'jquery',
-    'opinionStatus',
-    'opinionSave',
-    'productOpinionLabel'
-], function ($, loadStatus, saveOpinion, productOpinionLabel) {
+    'opinionManager'
+], function ($, opinionManager) {
     'use strict';
 
     return function (config) {
@@ -12,7 +10,7 @@ define([
         });
 
         function loadOpinion() {
-            loadStatus(config, function (response) {
+            opinionManager.status(config, function (response) {
                 let opinionText = response.opinion === 1 ? config.likeMessage :
                                   response.opinion === 0 ? config.dislikeMessage :
                                   config.defaultMessage;
@@ -37,14 +35,14 @@ define([
                 $('#opinion-container').html(newHtml);
 
                 bindOpinionButtonClick();
-                productOpinionLabel(config, '#product-opinion-label');
+                opinionManager.label(config, '#product-opinion-label');
             });
         }
 
         function bindOpinionButtonClick() {
             $('#opinion-button-container').off('click', 'button').on('click', 'button', function () {
                 let opinionValue = $(this).data('opinion');
-                saveOpinion(config, opinionValue, function (response) {
+                opinionManager.save(config, opinionValue, function (response) {
                     if (response.redirect && response.redirect_url) {
                         window.location.href = response.redirect_url;
                     } else {

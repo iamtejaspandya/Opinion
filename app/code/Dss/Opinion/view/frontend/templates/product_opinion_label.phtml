@@ -25,8 +25,8 @@ $productId = $product ? $product->getId() : 0;
     <script type="text/x-magento-init">
         {
             "#product-opinion-label": {
-                "productOpinionLabel": {
-                    "productId": "<?= /* @noEscape */ (int) $productId ?>"
+                "opinionLabelOnly": {
+                    "productId": "<?= (int) $productId ?>"
                 }
             }
         }

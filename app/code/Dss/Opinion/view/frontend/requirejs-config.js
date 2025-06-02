@@ -1,14 +1,11 @@
 var config = {
     map: {
         '*': {
+            'opinionManager': 'Dss_Opinion/js/api/opinion-manager',
+            'opinionLabelOnly': 'Dss_Opinion/js/opinion-label',
             'opinionHandler': 'Dss_Opinion/js/opinion',
-            'opinionStatus': 'Dss_Opinion/js/api/status-opinion',
-            'opinionSave': 'Dss_Opinion/js/api/save-opinion',
-            'opinionDelete': 'Dss_Opinion/js/api/delete-opinion',
-            'productOpinionLabel': 'Dss_Opinion/js/api/product-opinion-label',
-            'opinionChartComponent': 'Dss_Opinion/js/opinion-chart',
-            'currentOpinionChartComponent': 'Dss_Opinion/js/current-opinion-chart',
-            'opinionActions': 'Dss_Opinion/js/actions'
+            'opinionActions': 'Dss_Opinion/js/actions',
+            'opinionChartsComponent': 'Dss_Opinion/js/opinion-charts'
         }
     },
 

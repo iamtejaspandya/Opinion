@@ -1,0 +1,104 @@
+<?php
+
+/**
+ * Digit Software Solutions.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category  Dss
+ * @package   Dss_Opinion
+ * @author    Extension Team
+ * @copyright Copyright (c) 2025 Digit Software Solutions. ( https://digitsoftsol.com )
+ */
+
+/** @var \Magento\Framework\View\Element\Template $block */
+$parentBlock = $block->getParentBlock();
+$opinionStats = $parentBlock ? $parentBlock->getOpinionStats() : [];
+$totalChartColors = $parentBlock ? $parentBlock->getOpinionChartColors() : [];
+$currentChartColors = $parentBlock ? $parentBlock->getCurrentOpinionColors() : [];
+?>
+
+<?php if ($parentBlock->isOpinionChartEnabled()): ?>
+    <?php if ($opinionStats['likes'] || $opinionStats['dislikes']): ?>
+        <div class="opinion-chart opinion-chart-container-total">
+            <canvas id="total-opinions-chart" class="page-opinion-chart"></canvas>
+            <?php if ($parentBlock->isOpinionChartTotalEnabled()): ?>
+                <span class="chart-total-label opinion-chart-total">
+                    <?= $escaper->escapeHtml(__('Total Opinions:')) ?>
+                    <span class="chart-total opinions-total">
+                        <?= $escaper->escapeHtml($opinionStats['total']) ?>
+                    </span>
+                </span>
+            <?php endif; ?>
+            <?php if ($parentBlock->isOpinionChartPercentageEnabled()): ?>
+                <span class="chart-percentage-label opinion-chart-percentage">
+                    <?= $escaper->escapeHtml(__('Total Like in Percentage:')) ?>
+                    <span class="chart-percentage opinions-percentage">
+                        <?= $escaper->escapeHtml($opinionStats['like_percent'] . '%') ?>
+                    </span>
+                </span>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>
+
+<?php if ($parentBlock->isCurrentOpinionChartEnabled()): ?>
+    <?php if ($opinionStats['current_page_likes'] || $opinionStats['current_page_dislikes']): ?>
+        <div class="opinion-chart opinion-chart-container-current">
+            <canvas id="current-page-opinions-chart" class="current-page-opinion-chart"></canvas>
+            <?php if ($parentBlock->isOpinionChartTotalEnabled()): ?>
+                <span class="chart-total-label current-opinion-chart-total">
+                    <?= $escaper->escapeHtml(__('Current Page Opinions:')) ?>
+                    <span class="chart-total current-opinions-total">
+                        <?= $escaper->escapeHtml($opinionStats['current_page_total']) ?>
+                    </span>
+                </span>
+            <?php endif; ?>
+            <?php if ($parentBlock->isOpinionChartPercentageEnabled()): ?>
+                <span class="chart-percentage-label current-opinion-chart-percentage">
+                    <?= $escaper->escapeHtml(__('Current Page Like in Percentage:')) ?>
+                    <span class="chart-percentage current-opinions-percentage">
+                        <?= $escaper->escapeHtml($opinionStats['current_page_like_percent'] . '%') ?>
+                    </span>
+                </span>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>
+
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Magento_Ui/js/core/app": {
+            "components": {
+                "productOpinionCharts": {
+                    "component": "opinionChartsComponent",
+                    "charts": [
+                        {
+                            "canvasId": "total-opinions-chart",
+                            "data": [
+                                <?= (int)$opinionStats['likes'] ?>,
+                                <?= (int)$opinionStats['dislikes'] ?>
+                            ],
+                            "labels": ["Liked", "Disliked"],
+                            "colors": <?= /* @noEscape */ json_encode($totalChartColors) ?>
+                        },
+                        {
+                            "canvasId": "current-page-opinions-chart",
+                            "data": [
+                                <?= (int)$opinionStats['current_page_likes'] ?>,
+                                <?= (int)$opinionStats['current_page_dislikes'] ?>
+                            ],
+                            "labels": ["Liked", "Disliked"],
+                            "colors": <?= /* @noEscape */ json_encode($currentChartColors) ?>
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+</script>

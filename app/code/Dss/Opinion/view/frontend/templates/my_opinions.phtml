@@ -16,20 +16,17 @@
 
 /** @var \Dss\Opinion\Block\MyOpinions $block */
 $customerOpinions = $block->getCustomerOpinions();
-$opinionStats = $block->getOpinionStats();
 $query = $block->getRequest()->getParam('opinion_query');
 $queryProductIds = $block->getRequest()->getParam('product_ids');
 ?>
 
 <div class="dss-customer-opinions">
-    <?php if (!$block->canCustomerGiveOpinion()): ?>
-        <?php if ($block->getDisallowedCustomerMessage()): ?>
+    <?php if (!$block->canCustomerGiveOpinion() && $block->getDisallowedCustomerMessage()): ?>
             <div class="message error empty disallowed-customer">
                 <div>
                     <?= $escaper->escapeHtml(__($block->getDisallowedCustomerMessage())) ?>
                 </div>
             </div>
-        <?php endif; ?>
     <?php else: ?>
         <?php if (!$block->isOpinionSubmissionAllowed() && $block->getOpinionDisabledMessage()): ?>
             <div class="message info empty disable-message">
@@ -64,7 +61,15 @@ $queryProductIds = $block->getRequest()->getParam('product_ids');
                 </button>
             </form>
             <?php $query = $block->getSearchQuery(); ?>
-            <?php if ($block->hasNoProductMatch()): ?>
+            <?php if ($block->isTooShortQuery()): ?>
+                <div class="message info too-short">
+                    <div>
+                        <?= $escaper->escapeHtml(__(
+                            'Search term too short — need at least 3 characters to show product opinions.'
+                        )) ?>
+                    </div>
+                </div>
+            <?php elseif ($block->hasNoProductMatch()): ?>
                 <div class="message info not-found">
                     <div>
                         <?= $escaper->escapeHtml(__(
@@ -85,19 +90,12 @@ $queryProductIds = $block->getRequest()->getParam('product_ids');
                 </div>
             <?php endif; ?>
         </div>
-        <?php if ($opinionStats): ?>
-            <?php if ($block->isOpinionChartEnabled() || $block->isCurrentOpinionChartEnabled()): ?>
-                <div class="opinion-stats" data-mage-init='{"Dss_Opinion/js/chart-type-selector":{}}'>
-                    <div class="charts-wrapper">
-                        <?php if ($block->isOpinionChartEnabled()): ?>
-                            <?= $block->getChildHtml('opinion_stats') ?>
-                        <?php endif; ?>
-                        <?php if ($block->isCurrentOpinionChartEnabled()): ?>
-                            <?= $block->getChildHtml('current_page_opinion_stats') ?>
-                        <?php endif; ?>
-                    </div>
+        <?php if ($block->isOpinionChartEnabled() || $block->isCurrentOpinionChartEnabled()): ?>
+            <div class="opinion-stats" data-mage-init='{"Dss_Opinion/js/chart-type-selector":{}}'>
+                <div class="charts-wrapper">
+                    <?= $block->getChildHtml('customer_product_opinion_charts') ?>
                 </div>
-            <?php endif; ?>
+            </div>
         <?php endif; ?>
         <div class="table-wrapper customer-opinions">
             <table class="data table table-opinion-items" id="my-opinions-table">
@@ -190,7 +188,7 @@ $queryProductIds = $block->getRequest()->getParam('product_ids');
                             <?php if ($block->canCustomerGiveOpinion() && $block->isOpinionSubmissionAllowed()): ?>
                                 <script type="text/x-magento-init">
                                     {
-                                        "#opinion-actions-<?= $escaper->escapeJs($opinionId) ?>": {
+                                        "*": {
                                             "opinionActions": {
                                                 "elementId": "opinion-actions-<?= $escaper->escapeJs($opinionId) ?>",
                                                 "opinionId": "<?= $escaper->escapeJs($opinionId) ?>",
