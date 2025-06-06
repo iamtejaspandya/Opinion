@@ -18,7 +18,6 @@ declare(strict_types=1);
 
 namespace Dss\Opinion\Controller\Index;
 
-use Dss\Opinion\Model\Config;
 use Dss\Opinion\Model\Service\OpinionManager;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\HttpPostActionInterface;
@@ -33,7 +32,6 @@ class Delete implements HttpPostActionInterface
     /**
      * Constructor.
      *
-     * @param Config $config
      * @param CustomerSession $customerSession
      * @param ManagerInterface $messageManager
      * @param OpinionManager $opinionManager
@@ -42,7 +40,6 @@ class Delete implements HttpPostActionInterface
      * @param UrlInterface $url
      */
     public function __construct(
-        protected Config $config,
         protected CustomerSession $customerSession,
         protected ManagerInterface $messageManager,
         protected OpinionManager $opinionManager,
@@ -60,69 +57,30 @@ class Delete implements HttpPostActionInterface
     public function execute(): ResultInterface
     {
         $result = $this->jsonFactory->create();
+        $refererUrl = $this->request->getServer('HTTP_REFERER') ?? '';
+
+        $validation = $this->opinionManager->canCustomerSubmitOpinion($refererUrl);
+
+        if (!$validation['valid']) {
+            return $result->setData($validation['response']);
+        }
+
         $opinionId = (int)$this->request->getParam('opinion_id');
-        $myOpinionsUrl = $this->request->getServer('HTTP_REFERER') ?? '';
-
-        if (!$this->customerSession->isLoggedIn()) {
-            $this->messageManager->addErrorMessage(
-                __('Looks like you\'re logged out. Please sign in to share your thoughts!')
-            );
-
-            return $result->setData([
-                'success' => false,
-                'redirect' => true,
-                'redirect_url' => $this->url->getUrl('customer/account/login')
-            ]);
-        }
-
-        if (!$this->config->isProductOpinionEnabled()) {
-            $this->messageManager->addErrorMessage(
-                __('The product opinion feature is currently disabled.')
-            );
-
-            return $result->setData([
-                'success' => false,
-                'redirect' => true,
-                'redirect_url' => $myOpinionsUrl
-            ]);
-        }
-
-        if (!$this->config->isOpinionSubmissionAllowed()) {
-            $this->messageManager->addErrorMessage(
-                __('We appreciate your opinion! However, submissions are currently turned off.')
-            );
-
-            return $result->setData([
-                'success' => false,
-                'redirect' => true,
-                'redirect_url' => $myOpinionsUrl
-            ]);
-        }
-
-        if (!$this->config->canCustomerGiveOpinion()) {
-            $this->messageManager->addErrorMessage(
-                __('Your account is currently restricted from submitting opinions.')
-            );
-
-            return $result->setData([
-                'success' => false,
-                'redirect' => true,
-                'redirect_url' => $myOpinionsUrl
-            ]);
-        }
-
         $customerId = (int)$this->customerSession->getCustomerId();
+
         $response = $this->opinionManager->customerOpinionDelete($customerId, $opinionId);
 
         if ($response['success']) {
             $this->messageManager->addSuccessMessage(__($response['message']));
+
             return $result->setData([
                 'success' => true,
                 'redirect' => true,
-                'redirect_url' => $myOpinionsUrl
+                'redirect_url' => $refererUrl
             ]);
         } else {
             $this->messageManager->addErrorMessage(__($response['message']));
+
             return $result->setData([
                 'success' => false,
                 'redirect' => false
