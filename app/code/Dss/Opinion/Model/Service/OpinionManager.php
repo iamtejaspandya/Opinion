@@ -31,7 +31,10 @@ use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable;
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Message\ManagerInterface;
+use Magento\Framework\UrlInterface;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Psr\Log\LoggerInterface;
 
@@ -50,6 +53,9 @@ class OpinionManager
      * @param Configurable $configurableType
      * @param Grouped $groupedType
      * @param Selection $bundleSelection
+     * @param CustomerSession $customerSession
+     * @param ManagerInterface $messageManager
+     * @param UrlInterface $url
      * @param LoggerInterface $logger
      */
     public function __construct(
@@ -63,6 +69,9 @@ class OpinionManager
         protected Configurable $configurableType,
         protected Grouped $groupedType,
         protected Selection $bundleSelection,
+        protected CustomerSession $customerSession,
+        protected ManagerInterface $messageManager,
+        protected UrlInterface $url,
         protected LoggerInterface $logger
     ) {
     }
@@ -426,5 +435,85 @@ class OpinionManager
     public function getMatchingProductIds(string $query): array
     {
         return $this->getFilteredProductCollection($query)->getAllIds();
+    }
+
+    /**
+     * Check whether the current customer is allowed to submit a product opinion.
+     *
+     * This method performs multiple checks:
+     *  - Customer is logged in
+     *  - Product opinion feature is enabled
+     *  - Opinion submission is currently allowed
+     *  - Current customer has permission to give an opinion
+     *
+     * @param string $refererUrl The URL to redirect to if validation fails
+     * @return array{
+     *     valid: bool,
+     *     response?: array{
+     *         success: bool,
+     *         redirect: bool,
+     *         redirect_url: string
+     *     }
+     * }
+     */
+    public function canCustomerSubmitOpinion(string $refererUrl): array
+    {
+        if (!$this->customerSession->isLoggedIn()) {
+            $this->messageManager->addErrorMessage(
+                __('Looks like you\'re logged out. Please sign in to share your thoughts!')
+            );
+            return [
+                'valid' => false,
+                'response' => [
+                    'success' => false,
+                    'redirect' => true,
+                    'redirect_url' => $this->url->getUrl('customer/account/login')
+                ]
+            ];
+        }
+
+        if (!$this->config->isProductOpinionEnabled()) {
+            $this->messageManager->addErrorMessage(
+                __('The product opinion feature is currently disabled.')
+            );
+            return [
+                'valid' => false,
+                'response' => [
+                    'success' => false,
+                    'redirect' => true,
+                    'redirect_url' => $refererUrl
+                ]
+            ];
+        }
+
+        if (!$this->config->isOpinionSubmissionAllowed()) {
+            $this->messageManager->addErrorMessage(
+                __('We appreciate your opinion! However, submissions are currently turned off.')
+            );
+            return [
+                'valid' => false,
+                'response' => [
+                    'success' => false,
+                    'redirect' => true,
+                    'redirect_url' => $refererUrl
+                ]
+            ];
+        }
+
+        if (!$this->config->canCustomerGiveOpinion()) {
+            $this->messageManager->addErrorMessage(
+                __('Your account is currently restricted from submitting opinions.')
+            );
+            return [
+                'valid' => false,
+                'response' => [
+                    'success' => false,
+                    'redirect' => true,
+                    'redirect_url' => $refererUrl
+                ]
+            ];
+        }
+
+        return ['valid' => true, 'response' => null];
     }
 }

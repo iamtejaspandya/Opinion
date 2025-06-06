@@ -63,59 +63,19 @@ class Save implements HttpPostActionInterface
     public function execute(): ResultInterface
     {
         $result = $this->jsonFactory->create();
+        $refererUrl = $this->request->getServer('HTTP_REFERER') ?? '';
+
+        $validation = $this->opinionManager->canCustomerSubmitOpinion($refererUrl);
+
+        if (!$validation['valid']) {
+            return $result->setData($validation['response']);
+        }
+
         $data = $this->request->getPostValue();
         $productId = (int)($data['product_id'] ?? 0);
-        $currentPageUrl = $this->request->getServer('HTTP_REFERER') ?? '';
+        $newOpinion = isset($data['opinion']) ? (int)$data['opinion'] : null;
 
-        if (!$this->customerSession->isLoggedIn()) {
-            $this->messageManager->addErrorMessage(
-                __('Looks like you\'re logged out. Please sign in to share your thoughts!')
-            );
-
-            return $result->setData([
-                'success' => false,
-                'redirect' => true,
-                'redirect_url' => $this->url->getUrl('customer/account/login')
-            ]);
-        }
-
-        if (!$this->config->isProductOpinionEnabled()) {
-            $this->messageManager->addErrorMessage(
-                __('The product opinion feature is currently disabled.')
-            );
-
-            return $result->setData([
-                'success' => false,
-                'redirect' => true,
-                'redirect_url' => $currentPageUrl
-            ]);
-        }
-
-        if (!$this->config->isOpinionSubmissionAllowed()) {
-            $this->messageManager->addErrorMessage(
-                __('We appreciate your opinion! However, submissions are currently turned off.')
-            );
-
-            return $result->setData([
-                'success' => false,
-                'redirect' => true,
-                'redirect_url' => $currentPageUrl
-            ]);
-        }
-
-        if (!$this->config->canCustomerGiveOpinion()) {
-            $this->messageManager->addErrorMessage(
-                __('Your account is currently restricted from submitting opinions.')
-            );
-
-            return $result->setData([
-                'success' => false,
-                'redirect' => true,
-                'redirect_url' => $currentPageUrl
-            ]);
-        }
-
-        if (empty($data['product_id']) || !isset($data['opinion'])) {
+        if (empty($productId) || !in_array($newOpinion, [0, 1], true)) {
             return $result->setData([
                 'success' => false,
                 'message' => __('Invalid data provided.')
@@ -123,7 +83,6 @@ class Save implements HttpPostActionInterface
         }
 
         $customerId = (int)$this->customerSession->getCustomerId();
-        $newOpinion = (int)$data['opinion'];
 
         $saveResult = $this->opinionManager->customerOpinionSave(
             $customerId,
@@ -131,8 +90,7 @@ class Save implements HttpPostActionInterface
             $newOpinion
         );
 
-        $referer = $this->request->getServer('HTTP_REFERER') ?? '';
-        $isMyOpinionsPage = str_contains($referer, 'opinion/index/myopinions');
+        $isMyOpinionsPage = str_contains($refererUrl, 'opinion/index/myopinions');
 
         if ($saveResult['success']) {
             $message = $saveResult['message'];

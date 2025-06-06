@@ -70,35 +70,35 @@ $currentChartColors = $parentBlock ? $parentBlock->getCurrentOpinionColors() : [
 <?php endif; ?>
 
 <script type="text/x-magento-init">
-{
-    "*": {
-        "Magento_Ui/js/core/app": {
-            "components": {
-                "productOpinionCharts": {
-                    "component": "opinionChartsComponent",
-                    "charts": [
-                        {
-                            "canvasId": "total-opinions-chart",
-                            "data": [
-                                <?= (int)$opinionStats['likes'] ?>,
-                                <?= (int)$opinionStats['dislikes'] ?>
-                            ],
-                            "labels": ["Liked", "Disliked"],
-                            "colors": <?= /* @noEscape */ json_encode($totalChartColors) ?>
-                        },
-                        {
-                            "canvasId": "current-page-opinions-chart",
-                            "data": [
-                                <?= (int)$opinionStats['current_page_likes'] ?>,
-                                <?= (int)$opinionStats['current_page_dislikes'] ?>
-                            ],
-                            "labels": ["Liked", "Disliked"],
-                            "colors": <?= /* @noEscape */ json_encode($currentChartColors) ?>
-                        }
-                    ]
+    {
+        "*": {
+            "Magento_Ui/js/core/app": {
+                "components": {
+                    "productOpinionCharts": {
+                        "component": "opinionChartsComponent",
+                        "charts": [
+                            {
+                                "canvasId": "total-opinions-chart",
+                                "data": [
+                                    <?= (int)$opinionStats['likes'] ?>,
+                                    <?= (int)$opinionStats['dislikes'] ?>
+                                ],
+                                "labels": ["Liked", "Disliked"],
+                                "colors": <?= /* @noEscape */ json_encode($totalChartColors) ?>
+                            },
+                            {
+                                "canvasId": "current-page-opinions-chart",
+                                "data": [
+                                    <?= (int)$opinionStats['current_page_likes'] ?>,
+                                    <?= (int)$opinionStats['current_page_dislikes'] ?>
+                                ],
+                                "labels": ["Liked", "Disliked"],
+                                "colors": <?= /* @noEscape */ json_encode($currentChartColors) ?>
+                            }
+                        ]
+                    }
                 }
             }
         }
     }
-}
 </script>
