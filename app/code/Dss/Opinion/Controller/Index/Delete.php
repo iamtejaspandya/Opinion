@@ -18,34 +18,31 @@ declare(strict_types=1);
 
 namespace Dss\Opinion\Controller\Index;
 
+use Dss\Opinion\Model\Config;
 use Dss\Opinion\Model\Service\OpinionManager;
-use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Message\ManagerInterface;
-use Magento\Framework\UrlInterface;
 
 class Delete implements HttpPostActionInterface
 {
     /**
      * Constructor.
      *
-     * @param CustomerSession $customerSession
+     * @param Config $config
+     * @param JsonFactory $jsonFactory
      * @param ManagerInterface $messageManager
      * @param OpinionManager $opinionManager
      * @param RequestInterface $request
-     * @param JsonFactory $jsonFactory
-     * @param UrlInterface $url
      */
     public function __construct(
-        protected CustomerSession $customerSession,
+        protected Config $config,
+        protected JsonFactory $jsonFactory,
         protected ManagerInterface $messageManager,
         protected OpinionManager $opinionManager,
-        protected RequestInterface $request,
-        protected JsonFactory $jsonFactory,
-        protected UrlInterface $url
+        protected RequestInterface $request
     ) {
     }
 
@@ -65,10 +62,13 @@ class Delete implements HttpPostActionInterface
             return $result->setData($validation['response']);
         }
 
+        $customerId = (int)$this->config->getCustomerId();
         $opinionId = (int)$this->request->getParam('opinion_id');
-        $customerId = (int)$this->customerSession->getCustomerId();
 
-        $response = $this->opinionManager->customerOpinionDelete($customerId, $opinionId);
+        $response = $this->opinionManager->customerOpinionDelete(
+            $customerId,
+            $opinionId
+        );
 
         if ($response['success']) {
             $this->messageManager->addSuccessMessage(__($response['message']));

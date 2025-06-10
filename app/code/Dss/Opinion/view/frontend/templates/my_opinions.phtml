@@ -16,7 +16,7 @@
 
 /** @var \Dss\Opinion\Block\MyOpinions $block */
 $customerOpinions = $block->getCustomerOpinions();
-$query = $block->getRequest()->getParam('opinion_query');
+$query = $block->getSearchQuery();
 $queryProductIds = $block->getRequest()->getParam('product_ids');
 ?>
 
@@ -60,7 +60,6 @@ $queryProductIds = $block->getRequest()->getParam('product_ids');
                     <?= $escaper->escapeHtml(__('Search')) ?>
                 </button>
             </form>
-            <?php $query = $block->getSearchQuery(); ?>
             <?php if ($block->isTooShortQuery()): ?>
                 <div class="message info too-short">
                     <div>

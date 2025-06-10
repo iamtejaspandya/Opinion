@@ -18,7 +18,7 @@
 $parentBlock = $block->getParentBlock();
 $opinionStats = $parentBlock ? $parentBlock->getOpinionStats() : [];
 $totalChartColors = $parentBlock ? $parentBlock->getOpinionChartColors() : [];
-$currentChartColors = $parentBlock ? $parentBlock->getCurrentOpinionColors() : [];
+$currentChartColors = $parentBlock ? $parentBlock->getCurrentOpinionChartColors() : [];
 ?>
 
 <?php if ($parentBlock->isOpinionChartEnabled()): ?>
