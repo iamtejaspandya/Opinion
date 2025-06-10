@@ -19,8 +19,8 @@ declare(strict_types=1);
 namespace Dss\Opinion\Model\Service;
 
 use Dss\Opinion\Model\Config;
-use Dss\Opinion\Model\CustomerOpinionFactory;
 use Dss\Opinion\Model\CustomerOpinion as CustomerOpinionModel;
+use Dss\Opinion\Model\CustomerOpinionFactory;
 use Dss\Opinion\Model\OpinionFactory as ProductOpinionFactory;
 use Dss\Opinion\Model\ResourceModel\CustomerOpinion as CustomerOpinionResource;
 use Dss\Opinion\Model\ResourceModel\Opinion as ProductOpinionResource;
@@ -31,7 +31,6 @@ use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable;
-use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\UrlInterface;
@@ -53,7 +52,6 @@ class OpinionManager
      * @param Configurable $configurableType
      * @param Grouped $groupedType
      * @param Selection $bundleSelection
-     * @param CustomerSession $customerSession
      * @param ManagerInterface $messageManager
      * @param UrlInterface $url
      * @param LoggerInterface $logger
@@ -69,7 +67,6 @@ class OpinionManager
         protected Configurable $configurableType,
         protected Grouped $groupedType,
         protected Selection $bundleSelection,
-        protected CustomerSession $customerSession,
         protected ManagerInterface $messageManager,
         protected UrlInterface $url,
         protected LoggerInterface $logger
@@ -125,12 +122,19 @@ class OpinionManager
 
             if ($opinion->getId()) {
                 if ((int)$opinion->getOpinion() === $newOpinion) {
+                    $opinionLabel = $newOpinion === 1 ? __('Like') : __('Dislike');
+
                     return [
                         'success' => true,
-                        'message' => __('Your opinion is already submitted.'),
+                        'message' => __(
+                            'You have already submitted a "%1" opinion for "%2".',
+                            $opinionLabel,
+                            $productName
+                        ),
                         'opinion' => $newOpinion
                     ];
                 }
+
                 $opinion->setOpinion($newOpinion);
                 $opinion->setUpdatedAt((new \DateTime())->format('Y-m-d H:i:s'));
             } else {
@@ -147,11 +151,15 @@ class OpinionManager
 
             return [
                 'success' => true,
-                'message' => __('Your opinion has been submitted successfully.'),
+                'message' => __(
+                    'Your opinion on "%1" has been submitted successfully.',
+                    $productName
+                ),
                 'opinion' => $newOpinion
             ];
         } catch (\Exception $e) {
             $this->logger->error('Error saving opinion: ' . $e->getMessage());
+
             return [
                 'success' => false,
                 'message' => __('Something went wrong while saving your opinion.'),
@@ -191,15 +199,21 @@ class OpinionManager
             }
 
             $productId = (int)$opinion->getProductId();
+            $productName = $this->getProductNameById($productId);
+
             $this->customerOpinionResource->delete($opinion);
             $this->productOpinionUpdate($productId);
 
             return [
                 'success' => true,
-                'message' => __('Opinion deleted successfully.')
+                'message' => __(
+                    'Your opinion on "%1" has been deleted successfully.',
+                    $productName
+                )
             ];
         } catch (\Exception $e) {
             $this->logger->error('Error deleting opinion: ' . $e->getMessage());
+
             return [
                 'success' => false,
                 'message' => __('Something went wrong while deleting the opinion.')
@@ -291,24 +305,28 @@ class OpinionManager
             $message = $customerOpinion !== null
                 ? ($customerOpinion ? __('First opinion in — and it’s a thumbs-up!')
                                     : __('First opinion in — not your favorite'))
-                : __('One opinion in! Share yours!');
+                : __('One opinion in! Share yours!')
+            ;
             $class = 'one-opinion';
         } elseif ($totalOpinions < $minThreshold) {
             if ($totalLikes > 0 && $totalDislikes === 0) {
                 $message = $customerOpinion !== null && $customerOpinion
                     ? __('You liked this—waiting for more opinions!')
-                    : __('Liked by some of our customers');
+                    : __('Liked by some of our customers')
+                ;
                 $class = 'someliked';
             } elseif ($totalLikes === 0 && $totalDislikes > 0) {
                 $message = $customerOpinion !== null && !$customerOpinion
                     ? __('Not your pick! Others haven’t shared yet')
-                    : __('More opinions needed! What do you think?');
+                    : __('More opinions needed! What do you think?')
+                ;
                 $class = 'not-enough';
             } else {
                 $message = $customerOpinion !== null
                     ? ($customerOpinion ? __('This product got your like!, but opinions are mixed')
                                         : __('Not your favorite, but others had mixed opinions'))
-                    : __('This product has received mixed opinions');
+                    : __('This product has received mixed opinions')
+                ;
                 $class = 'mixed';
             }
         } else {
@@ -350,7 +368,8 @@ class OpinionManager
                 $message = $customerOpinion !== null
                     ? ($customerOpinion ? __('This product got your like!, but opinions are mixed')
                                         : __('Not your favorite, but others had mixed opinions'))
-                    : __('This product has received mixed opinions');
+                    : __('This product has received mixed opinions')
+                ;
                 $class = 'mixed';
             }
         }
@@ -374,12 +393,15 @@ class OpinionManager
     {
         try {
             $product = $this->productRepository->getById($productId);
+
             return $product->getName();
         } catch (NoSuchEntityException $e) {
             $this->logger->warning("Product with ID $productId not found.");
+
             return null;
         } catch (\Exception $e) {
             $this->logger->error("Error fetching product name for ID $productId: " . $e->getMessage());
+
             return null;
         }
     }
@@ -458,10 +480,11 @@ class OpinionManager
      */
     public function canCustomerSubmitOpinion(string $refererUrl): array
     {
-        if (!$this->customerSession->isLoggedIn()) {
+        if ($this->config->getCustomerId() === null) {
             $this->messageManager->addErrorMessage(
                 __('Looks like you\'re logged out. Please sign in to share your thoughts!')
             );
+
             return [
                 'valid' => false,
                 'response' => [
@@ -476,6 +499,7 @@ class OpinionManager
             $this->messageManager->addErrorMessage(
                 __('The product opinion feature is currently disabled.')
             );
+
             return [
                 'valid' => false,
                 'response' => [
@@ -490,6 +514,7 @@ class OpinionManager
             $this->messageManager->addErrorMessage(
                 __('We appreciate your opinion! However, submissions are currently turned off.')
             );
+
             return [
                 'valid' => false,
                 'response' => [
@@ -504,6 +529,7 @@ class OpinionManager
             $this->messageManager->addErrorMessage(
                 __('Your account is currently restricted from submitting opinions.')
             );
+
             return [
                 'valid' => false,
                 'response' => [
@@ -514,6 +540,9 @@ class OpinionManager
             ];
         }
 
-        return ['valid' => true, 'response' => null];
+        return [
+            'valid' => true,
+            'response' => null
+        ];
     }
 }

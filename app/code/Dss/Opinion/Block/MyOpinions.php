@@ -310,9 +310,9 @@ class MyOpinions extends AbstractOpinion
      *
      * @return array
      */
-    public function getCurrentOpinionColors(): array
+    public function getCurrentOpinionChartColors(): array
     {
-        return $this->config->getCurrentOpinionColors();
+        return $this->config->getCurrentOpinionChartColors();
     }
 
     /**

@@ -122,198 +122,202 @@
     }
 }
 
-.opinion-search {
-    .opinion-search-form {
-        align-items: center;
-        display: flex;
-        gap: 10px;
-        margin: 0 0 10px;
-        position: relative;
+.dss-customer-opinions {
+    .opinion-search {
+        .opinion-search-form {
+            align-items: center;
+            display: flex;
+            gap: 10px;
+            margin: 0 0 10px;
+            position: relative;
 
-        .opinion-search-input {
-            flex: 1;
-            font-size: 14px;
-            padding: 8px;
+            .opinion-search-input {
+                flex: 1;
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .suggestion-wrapper {
+                position: relative;
+                width: 100%;
+            }
+
+            .suggestion-list {
+                background: @opinion-white-color;
+                border: 1px solid @opinion-gray-light-color;
+                border-top: none;
+                box-shadow: 0 2px 8px fade(@opinion-black-color, 15%);
+                left: 0;
+                list-style: none;
+                margin: 0;
+                max-height: 200px;
+                overflow-y: auto;
+                padding: 0;
+                position: absolute;
+                right: 0;
+                top: 100%;
+                z-index: 1000;
+            }
+
+            .suggestion-list li {
+                cursor: pointer;
+                padding: 10px;
+                transition: background .2s;
+            }
+
+            .suggestion-list li:hover {
+                background: @opinion-white-smoke-color;
+            }
+        }
+    }
+
+    .opinion-stats {
+        display: block;
+
+        .chart-type-selector-wrapper {
+            align-items: center;
+            display: grid;
+            float: right;
+            grid-template-columns: 80px 1fr;
+            max-width: 300px;
+
+            .chart-type-selector {
+                background-color: @opinion-white-smoke-color;
+                border-radius: 3px;
+                box-shadow: inset 0 1px 0 0 @opinion-white-color, inset 0 -1px 0 0 fade(@opinion-gray-light-color, 30%);
+            }
         }
 
-        .suggestion-wrapper {
-            position: relative;
+        .charts-wrapper {
+            display: flex;
             width: 100%;
         }
 
-        .suggestion-list {
-            background: @opinion-white-color;
-            border: 1px solid @opinion-gray-light-color;
-            border-top: none;
-            box-shadow: 0 2px 8px fade(@opinion-black-color, 15%);
-            left: 0;
-            list-style: none;
-            margin: 0;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 0;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            z-index: 1000;
-        }
+        .opinion-chart {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            margin: 10px auto;
+            width: 40%;
 
-        .suggestion-list li {
-            cursor: pointer;
-            padding: 10px;
-            transition: background .2s;
-        }
+            .chart-total-label,
+            .chart-percentage-label {
+                font-size: 12px;
+                font-weight: 500;
 
-        .suggestion-list li:hover {
-            background: @opinion-white-smoke-color;
+                .chart-total,
+                .chart-percentage {
+                    font-size: 14px;
+                    font-weight: 600;
+                }
+            }
+
         }
     }
-}
 
-.customer-opinions {
-    .product-image,
-    .product-name,
-    .product-opinion,
-    .product-opinion-actions {
-        border-radius: 6px;
-        font-weight: bold;
-        padding: 8px 12px;
-        text-align: center;
-        vertical-align: middle;
+    .customer-opinions {
+        .product-image,
+        .product-name,
+        .product-opinion,
+        .product-opinion-actions {
+            border-radius: 6px;
+            font-weight: bold;
+            padding: 8px 12px;
+            text-align: center;
+            vertical-align: middle;
 
-        &.liked {
-            background-color: @opinion-success-bg;
-            border: 1px solid @opinion-success-border;
-            color: @opinion-success-text;
-        }
+            &.liked {
+                background-color: @opinion-success-bg;
+                border: 1px solid @opinion-success-border;
+                color: @opinion-success-text;
+            }
 
-        &.disliked {
-            background-color: @opinion-error-bg;
-            border: 1px solid @opinion-error-border;
-            color: @opinion-error-text;
-        }
+            &.disliked {
+                background-color: @opinion-error-bg;
+                border: 1px solid @opinion-error-border;
+                color: @opinion-error-text;
+            }
 
-        .opinion-product-image {
-            aspect-ratio: 1 / 1;
-            display: block;
-            margin: 0 auto;
-            max-height: 100%;
-            max-width: 100%;
-            object-fit: contain;
-        }
+            .opinion-product-image {
+                aspect-ratio: 1 / 1;
+                display: block;
+                margin: 0 auto;
+                max-height: 100%;
+                max-width: 100%;
+                object-fit: contain;
+            }
 
-        .actions-btns {
-            button {
-                align-items: center;
-                background: none;
-                border: none;
-                border-radius: 6px;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: 600;
-                height: 38px;
-                padding: 10px 15px;
-                transition: background .4s ease-in-out, transform .3s ease-in-out;
-
-                &:hover {
+            .actions-btns {
+                button {
+                    align-items: center;
+                    background: none;
                     border: none;
-                    opacity: .85;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: 600;
+                    height: 38px;
+                    padding: 10px 15px;
+                    transition: background .4s ease-in-out, transform .3s ease-in-out;
+
+                    &:hover {
+                        border: none;
+                        opacity: .85;
+                    }
+
+                    &:active {
+                        transform: scale(.95);
+                    }
                 }
 
-                &:active {
-                    transform: scale(.95);
+                .liked {
+                    background: @opinion-secondary-color;
+                    color: @opinion-white-color;
+
+                    &:hover {
+                        background: darken(@opinion-secondary-color, 10%);
+                    }
                 }
-            }
 
-            .liked {
-                background: @opinion-secondary-color;
-                color: @opinion-white-color;
+                .disliked {
+                    background: @opinion-primary-color;
+                    color: @opinion-white-color;
 
-                &:hover {
-                    background: darken(@opinion-secondary-color, 10%);
+                    &:hover {
+                        background: darken(@opinion-primary-color, 10%);
+                    }
                 }
-            }
 
-            .disliked {
-                background: @opinion-primary-color;
-                color: @opinion-white-color;
+                .delete-opinion {
+                    background: @opinion-remove-color;
+                    color: @opinion-white-color;
+                    margin-left: 8px;
 
-                &:hover {
-                    background: darken(@opinion-primary-color, 10%);
+                    &:hover {
+                        background: darken(@opinion-remove-color, 10%);
+                    }
                 }
-            }
-
-            .delete-opinion {
-                background: @opinion-remove-color;
-                color: @opinion-white-color;
-                margin-left: 8px;
-
-                &:hover {
-                    background: darken(@opinion-remove-color, 10%);
-                }
-            }
-        }
-    }
-}
-
-.opinion-stats {
-    display: block;
-
-    .chart-type-selector-wrapper {
-        align-items: center;
-        display: grid;
-        float: right;
-        grid-template-columns: 80px 1fr;
-        max-width: 300px;
-
-        .chart-type-selector {
-            background-color: @opinion-white-smoke-color;
-            border-radius: 3px;
-            box-shadow: inset 0 1px 0 0 @opinion-white-color, inset 0 -1px 0 0 fade(@opinion-gray-light-color, 30%);
-        }
-    }
-
-    .charts-wrapper {
-        display: flex;
-        width: 100%;
-    }
-
-    .opinion-chart {
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-        margin: 10px auto;
-        width: 40%;
-
-        .chart-total-label,
-        .chart-percentage-label {
-            font-size: 12px;
-            font-weight: 500;
-
-            .chart-total,
-            .chart-percentage {
-                font-size: 14px;
-                font-weight: 600;
             }
         }
-
     }
 }
 
 @media only screen and (max-width: 1132px) {
-    .customer-opinions {
-        .product-opinion-actions {
-            .actions-btns {
-                display: grid;
-                gap: 7px;
+    .dss-customer-opinions {
+        .customer-opinions {
+            .product-opinion-actions {
+                .actions-btns {
+                    display: grid;
+                    gap: 7px;
 
-                button {
-                    height: auto;
-                    padding: 7px 10px;
-                }
+                    button {
+                        height: auto;
+                        padding: 7px 10px;
+                    }
 
-                .delete-opinion {
-                    margin: 0;
+                    .delete-opinion {
+                        margin: 0;
+                    }
                 }
             }
         }
@@ -321,38 +325,42 @@
 }
 
 @media only screen and (max-width: 768px) {
-    .opinion-stats {
-        .opinion-chart {
-            width: 285px;
+    .dss-customer-opinions {
+        .opinion-stats {
+            .opinion-chart {
+                width: 285px;
+            }
         }
     }
 }
 
 @media only screen and (max-width: 640px) {
-    .opinion-stats {
-        .opinion-chart {
-            width: 250px;
+    .dss-customer-opinions {
+        .opinion-stats {
+            .opinion-chart {
+                width: 250px;
+            }
         }
-    }
 
-    .customer-opinions {
-        .product-opinion-actions {
-            &.liked {
-                border: 1px solid @opinion-success-border !important;
-            }
+        .customer-opinions {
+            .product-opinion-actions {
+                &.liked {
+                    border: 1px solid @opinion-success-border !important;
+                }
 
-            &.disliked {
-                border: 1px solid @opinion-error-border !important;
-            }
+                &.disliked {
+                    border: 1px solid @opinion-error-border !important;
+                }
 
-            .actions-btns {
-                align-items: center;
-                display: grid;
-                justify-content: center;
+                .actions-btns {
+                    align-items: center;
+                    display: grid;
+                    justify-content: center;
 
-                button {
-                    max-width: 150px;
-                    padding: 7px 10px;
+                    button {
+                        max-width: 150px;
+                        padding: 7px 10px;
+                    }
                 }
             }
         }
@@ -360,74 +368,76 @@
 }
 
 @media only screen and (max-width: 520px) {
-    .opinion-stats {
-        .charts-wrapper {
-            flex-direction: column;
+    .dss-customer-opinions {
+        .opinion-stats {
+            .charts-wrapper {
+                flex-direction: column;
+            }
         }
-    }
-}
-
-.product-opinion-label {
-    animation: fadeInScale .4s ease-in-out forwards;
-    border-radius: 5px;
-    color: @opinion-white-color;
-    font-weight: bold;
-    left: 10px;
-    padding: 5px 10px;
-    position: absolute;
-    top: 10px;
-    transform: scale(.9);
-    transition: background-color .3s ease-in-out, color .3s ease-in-out, opacity .3s ease-in-out, transform .3s ease-in-out;
-
-    &.no-opinion {
-        background: fade(@opinion-no-opinion-bg, 80%);
-        border: 1px solid @opinion-no-opinion-border;
-    }
-
-    &.one-opinion {
-        background: fade(@opinion-one-opinion-bg, 80%);
-        border: 1px solid @opinion-one-opinion-border;
-    }
-
-    &.not-enough {
-        background: fade(@opinion-not-enough-bg, 80%);
-        border: 1px solid @opinion-not-enough-border;
-        color: @opinion-not-enough-text;
-    }
-
-    &.someliked {
-        background-color: fade(@opinion-someliked-bg, 80%);
-        border: 1px solid @opinion-someliked-border;
-        color: @opinion-someliked-text;
-    }
-
-    &.mixed {
-        background-color: fade(@opinion-neutral-bg, 80%);
-        border: 1px solid @opinion-neutral-border;
-        color: @opinion-neutral-text;
-    }
-
-    &.liked {
-        background: fade(@opinion-success-bg, 80%);
-        border: 1px solid @opinion-success-border;
-        color: @opinion-success-text;
-    }
-
-    &.all-liked {
-        animation: popPulse .6s ease-in-out forwards, subtleGlow 3s ease-in-out infinite;
-        background: linear-gradient(135deg, @opinion-all-liked-gradient-start 0%, @opinion-all-liked-gradient-end 100%);
-        border: 1px solid @opinion-all-liked-border;
-    }
-
-    &.error {
-        background: fade(@opinion-error-bg, 80%);
-        border: 1px solid @opinion-error-border;
-        color: @opinion-error-text;
     }
 }
 
 .product.media {
     position: relative;
+
+    .product-opinion-label {
+        animation: fadeInScale .4s ease-in-out forwards;
+        border-radius: 5px;
+        color: @opinion-white-color;
+        font-weight: bold;
+        left: 10px;
+        padding: 5px 10px;
+        position: absolute;
+        top: 10px;
+        transform: scale(.9);
+        transition: background-color .3s ease-in-out, color .3s ease-in-out, opacity .3s ease-in-out, transform .3s ease-in-out;
+
+        &.no-opinion {
+            background: fade(@opinion-no-opinion-bg, 80%);
+            border: 1px solid @opinion-no-opinion-border;
+        }
+
+        &.one-opinion {
+            background: fade(@opinion-one-opinion-bg, 80%);
+            border: 1px solid @opinion-one-opinion-border;
+        }
+
+        &.not-enough {
+            background: fade(@opinion-not-enough-bg, 80%);
+            border: 1px solid @opinion-not-enough-border;
+            color: @opinion-not-enough-text;
+        }
+
+        &.someliked {
+            background-color: fade(@opinion-someliked-bg, 80%);
+            border: 1px solid @opinion-someliked-border;
+            color: @opinion-someliked-text;
+        }
+
+        &.mixed {
+            background-color: fade(@opinion-neutral-bg, 80%);
+            border: 1px solid @opinion-neutral-border;
+            color: @opinion-neutral-text;
+        }
+
+        &.liked {
+            background: fade(@opinion-success-bg, 80%);
+            border: 1px solid @opinion-success-border;
+            color: @opinion-success-text;
+        }
+
+        &.all-liked {
+            animation: popPulse .6s ease-in-out forwards, subtleGlow 3s ease-in-out infinite;
+            background: linear-gradient(135deg, @opinion-all-liked-gradient-start 0%, @opinion-all-liked-gradient-end 100%);
+            border: 1px solid @opinion-all-liked-border;
+        }
+
+        &.error {
+            background: fade(@opinion-error-bg, 80%);
+            border: 1px solid @opinion-error-border;
+            color: @opinion-error-text;
+        }
+    }
 }
 
 @keyframes fadeInScale {

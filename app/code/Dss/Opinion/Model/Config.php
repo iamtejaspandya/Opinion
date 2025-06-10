@@ -223,7 +223,7 @@ class Config
      *
      * @return array
      */
-    public function getCurrentOpinionColors(): array
+    public function getCurrentOpinionChartColors(): array
     {
         return $this->getChartColorsFromConfig(
             self::XML_PATH_CURRENT_OPINION_CHART_COLORS,

@@ -20,14 +20,11 @@ namespace Dss\Opinion\Controller\Index;
 
 use Dss\Opinion\Model\Config;
 use Dss\Opinion\Model\Service\OpinionManager;
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Message\ManagerInterface;
-use Magento\Framework\UrlInterface;
 
 class Save implements HttpPostActionInterface
 {
@@ -35,23 +32,17 @@ class Save implements HttpPostActionInterface
      * Constructor.
      *
      * @param Config $config
-     * @param CustomerSession $customerSession
      * @param JsonFactory $jsonFactory
      * @param ManagerInterface $messageManager
      * @param OpinionManager $opinionManager
-     * @param ProductRepositoryInterface $productRepository
      * @param RequestInterface $request
-     * @param UrlInterface $url
      */
     public function __construct(
         protected Config $config,
-        protected CustomerSession $customerSession,
         protected JsonFactory $jsonFactory,
         protected ManagerInterface $messageManager,
         protected OpinionManager $opinionManager,
-        protected ProductRepositoryInterface $productRepository,
-        protected RequestInterface $request,
-        protected UrlInterface $url
+        protected RequestInterface $request
     ) {
     }
 
@@ -82,7 +73,7 @@ class Save implements HttpPostActionInterface
             ]);
         }
 
-        $customerId = (int)$this->customerSession->getCustomerId();
+        $customerId = (int)$this->config->getCustomerId();
 
         $saveResult = $this->opinionManager->customerOpinionSave(
             $customerId,
